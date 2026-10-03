@@ -1,0 +1,3453 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>⏰ OuNY</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500;700;800;900&family=Space+Grotesk:wght@500;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F4F0EA;
+    --card: #FFFFFF;
+    --card2: #FFFDF2;
+    --accent: #FF5C8D;      /* hot pink */
+    --accent2: #A855F7;     /* soft purple */
+    --accent3: #00E5A3;     /* lime/neon green */
+    --cyan: #A855F7;
+    --gold: #FFE600;        /* lemon yellow */
+    --pink: #FF5C8D;
+    --orange: #FF9F1C;
+    --green: #00E5A3;
+    --red: #FF3333;
+    --text: #000000;
+    --glass: #FFFFFF;
+    --ink: #000000;
+    --sh: 5px 5px 0 #000;
+    --sh-lg: 8px 8px 0 #000;
+    --bw: 3px;
+    --font: 'Space Grotesk', 'Kanit', 'Segoe UI', Tahoma, sans-serif;
+    --font-display: 'Kanit', 'Space Grotesk', 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    font-weight: 500;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── Dotted Y2K background ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(#000 1.3px, transparent 1.3px);
+    background-size: 22px 22px;
+    opacity: 0.13;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  body > * { position: relative; z-index: 1; }
+
+  /* Inline-styled helper text: keep readable on cream */
+  .main [style*="opacity"], .modal [style*="opacity"], .quiz-modal [style*="opacity"] { opacity: 0.8 !important; }
+
+  /* ─── Floating emojis ─── */
+  .floating-emoji {
+    position: fixed;
+    font-size: 1.5rem;
+    opacity: 0.35;
+    animation: floatUp linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0.35; }
+    50% { opacity: 0.5; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ─── Navbar ─── */
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--gold);
+    border-bottom: var(--bw) solid #000;
+    box-shadow: 0 5px 0 #000;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .navbar .logo {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 8px;
+    padding: 4px 10px;
+    box-shadow: 3px 3px 0 #000;
+    transform: rotate(-1.5deg);
+  }
+  .nav-buttons { display: flex; gap: 8px; }
+  .nav-btn {
+    padding: 8px 14px;
+    border: var(--bw) solid #000;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #000;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .nav-btn:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 #000; }
+  .nav-btn:active { transform: translate(3px,3px); box-shadow: 0 0 0 #000; }
+  .nav-btn-login { background: #fff; color: #000; }
+  .nav-btn-signup { background: var(--accent); color: #000; }
+  .nav-user-info {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+  .nav-user-info .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent3);
+    border: var(--bw) solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+  .nav-user-info .username {
+    font-weight: 800;
+    color: #000;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+  .nav-btn-logout { background: var(--red); color: #fff; }
+  .nav-btn-lang { background: var(--accent2); color: #000; display: flex; align-items: center; gap: 4px; }
+
+  /* ─── Main container ─── */
+  .main {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 20px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    text-align: center;
+    padding: 18px 0 8px;
+    position: relative;
+  }
+  .header::before {
+    content: '⚠️ MONEY AT RISK ⚠️';
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 4px 12px;
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    box-shadow: 3px 3px 0 #000;
+    transform: rotate(-3deg);
+    margin-bottom: 12px;
+    animation: stickerWobble 1.4s ease-in-out infinite alternate;
+  }
+  @keyframes stickerWobble {
+    from { transform: rotate(-3deg) scale(1); }
+    to { transform: rotate(2deg) scale(1.06); }
+  }
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 900;
+    line-height: 1.15;
+    color: #000;
+    display: inline-block;
+    background: var(--accent);
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 8px 18px;
+    box-shadow: var(--sh);
+  }
+  .header .tagline {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 14px;
+    opacity: 1;
+  }
+  .header .tagline span { color: #000; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+
+  /* ─── Clock ─── */
+  .clock-container {
+    text-align: center;
+    margin: 18px 0 10px;
+    position: relative;
+  }
+  #currentTime {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    font-variant-numeric: tabular-nums;
+    color: #000;
+    background: var(--gold);
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 2px 20px;
+    box-shadow: var(--sh-lg);
+    cursor: pointer;
+    user-select: none;
+  }
+  #currentDate {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-top: 16px;
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 3px 14px;
+    box-shadow: 3px 3px 0 #000;
+    opacity: 1;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 22px;
+    width: 100%;
+    margin: 14px 0;
+    box-shadow: var(--sh);
+    position: relative;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .card:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 #000; }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .card-title .badge, .badge {
+    font-family: var(--font);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 2px solid #000;
+    background: var(--accent2) !important;
+    color: #000;
+  }
+  #dashBadge { background: var(--red) !important; color: #fff; }
+
+  /* Sticker accents */
+  #setupCard { background: var(--card2); margin-top: 26px; }
+  #setupCard::before {
+    content: '- - - - ➜';
+    position: absolute;
+    left: 14px;
+    top: -26px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    font-size: 0.9rem;
+  }
+  #setupCard::after {
+    content: 'GO! 💣';
+    position: absolute;
+    top: -16px;
+    right: -8px;
+    background: var(--accent3);
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    box-shadow: 3px 3px 0 #000;
+    transform: rotate(6deg);
+  }
+  #dashboardCard::after {
+    content: 'HOT 🔥';
+    position: absolute;
+    top: -14px;
+    right: 14px;
+    background: var(--gold);
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    box-shadow: 3px 3px 0 #000;
+    transform: rotate(-5deg);
+  }
+
+  /* ─── Bank Link Card ─── */
+  .bank-card {
+    background: var(--accent3);
+    text-align: center;
+    cursor: pointer;
+  }
+  .bank-card:hover { background: #3dffc2; }
+  .bank-card.linked { background: #fff; cursor: default; }
+  .bank-card.linked:hover { transform: none; box-shadow: var(--sh); }
+  .bank-card .bank-icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .bank-card .bank-status { font-size: 0.82rem; font-weight: 700; opacity: 1; }
+  .bank-card .bank-status.linked { color: #000; opacity: 1; }
+  .bank-balance-big {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: #000;
+    background: var(--gold);
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 2px 14px;
+    box-shadow: 4px 4px 0 #000;
+    margin: 10px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ─── Time Inputs ─── */
+  .time-inputs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .time-inputs input {
+    width: 86px;
+    height: 74px;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 2.3rem;
+    font-weight: 900;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    background: var(--gold);
+    color: #000;
+    box-shadow: 4px 4px 0 #000;
+    outline: none;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  }
+  .time-inputs input:focus { background: #fff; transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #000; }
+  .time-inputs input:disabled { background: #ddd; box-shadow: 2px 2px 0 #000; }
+  .time-inputs .colon { font-size: 2.2rem; font-weight: 900; opacity: 1; animation: blink 1s infinite; }
+
+  /* ─── Sound selector ─── */
+  .sound-options { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 18px; }
+  .sound-option {
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 2px solid #000 !important;
+    background: #fff;
+    color: #000 !important;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 800;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  }
+  .sound-option:hover { background: var(--accent); transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+  .sound-option:active { transform: translate(2px,2px); box-shadow: 0 0 0 #000; }
+  .sound-option.active { background: var(--accent3); transform: translate(2px,2px); box-shadow: 1px 1px 0 #000; }
+  .sound-option[data-sound="morlam_earrape"] { background: var(--red); color: #fff !important; }
+  .sound-option[data-sound="morlam_earrape"].active { background: #ff7a7a; color: #000 !important; }
+  .sound-option.custom-sound { background: var(--accent2); }
+  .sound-option.custom-sound.active { background: var(--accent3); }
+  .sound-option.add-custom { background: var(--gold); border-style: dashed !important; }
+  .sound-option.add-custom:hover { background: #fff27a; box-shadow: 4px 4px 0 #000; }
+
+  /* ─── Buttons ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border: var(--bw) solid #000;
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #000;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: var(--sh);
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+    position: relative;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 #000; }
+  .btn:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 #000; }
+  .btn-primary { background: var(--accent); }
+  .btn-primary:hover { background: #ff7da3; }
+  .btn-cancel { background: #fff; margin-top: 12px; }
+  .btn-cancel:hover { background: var(--gold); }
+  .btn-bank { background: var(--gold); }
+  .btn-bank:hover { background: #fff27a; }
+
+  /* ─── Weekly Dashboard ─── */
+  .dashboard-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat-box {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .stat-box:nth-child(1) { background: #ffd1d1; }
+  .stat-box:nth-child(2) { background: #fff6a8; }
+  .stat-box:nth-child(3) { background: #ffd0e0; }
+  .stat-box:nth-child(4) { background: #e5d0ff; }
+  .stat-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; opacity: 1; }
+  .stat-val { font-family: var(--font-display); font-size: 1.35rem; font-weight: 900; margin-top: 4px; font-variant-numeric: tabular-nums; color: #000; }
+  .stat-val.red { color: var(--red); }
+  .stat-val.gold, .stat-val.cyan, .stat-val.pink { color: #000; }
+
+  .chart-container {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 12px 10px 8px;
+    margin-bottom: 16px;
+    box-shadow: 3px 3px 0 #000;
+    background-image: repeating-linear-gradient(to top, transparent 0 24px, rgba(0,0,0,0.08) 24px 25px);
+  }
+  .bar-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 110px; gap: 6px; padding: 0 4px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+  .bar-fill {
+    width: 100%;
+    max-width: 32px;
+    background: var(--accent) !important;
+    border: 2px solid #000;
+    border-radius: 6px 6px 0 0;
+    min-height: 6px;
+    transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .bar-fill.today { background: var(--accent3) !important; }
+  .bar-fill:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .bar-day { font-size: 0.68rem; font-weight: 700; opacity: 1; margin-top: 6px; }
+  .bar-day.today { color: #000; font-weight: 900; background: var(--gold); border: 2px solid #000; border-radius: 999px; padding: 0 6px; margin-top: 4px; }
+
+  .recent-losers {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 6px 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .loser-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    padding: 7px 0;
+    border-bottom: 2px dashed #000;
+  }
+  .loser-item:last-child { border-bottom: none; }
+  .loser-name { display: flex; align-items: center; gap: 6px; }
+  .loser-loss { color: var(--red); font-weight: 900; }
+
+  /* ─── LIVE RECIPIENT SHOWCASE IN ALARM ─── */
+  .live-victim-card {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 12px 18px;
+    margin: 10px auto;
+    width: 92%;
+    max-width: 380px;
+    color: #000;
+    box-shadow: var(--sh);
+    animation: pulseVictim 0.8s infinite alternate;
+  }
+  @keyframes pulseVictim {
+    0% { transform: scale(0.98) rotate(-0.6deg); }
+    100% { transform: scale(1.03) rotate(0.6deg); }
+  }
+  .live-victim-title {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #000;
+    background: var(--gold);
+    border: 2px solid #000;
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-weight: 900;
+  }
+  .live-victim-body { display: flex; align-items: center; gap: 12px; margin-top: 8px; text-align: left; }
+  .victim-avatar {
+    font-size: 2.2rem;
+    background: var(--accent2);
+    border: var(--bw) solid #000;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spinSlow 4s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spinSlow { 0% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } 100% { transform: rotate(0deg); } }
+  .victim-info { flex: 1; }
+  .victim-name { font-size: 1.02rem; font-weight: 900; color: #000; }
+  .victim-loss {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #000;
+    background: var(--accent3);
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 0 8px;
+  }
+  .live-victim-card [style*="opacity"] { opacity: 0.85 !important; }
+
+  /* ─── QUIZ MODAL FOR ALARM DISMISS ─── */
+  .quiz-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 10002;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .quiz-modal-overlay.show { display: flex; }
+  .quiz-modal {
+    background: var(--gold);
+    color: #000;
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 440px;
+    max-height: 92vh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: var(--sh-lg);
+    animation: quizPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes quizPop { from { transform: scale(0.8) rotate(-2deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+  .quiz-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 2px solid #000;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    color: #000;
+  }
+  .quiz-badge.math { background: var(--accent2); }
+  .quiz-badge.trivia { background: var(--accent3); }
+  .quiz-question {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 10px 0 16px;
+    line-height: 1.35;
+    color: #000;
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 4px 4px 0 #000;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .quiz-opt-btn {
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: var(--bw) solid #000;
+    background: #fff;
+    color: #000;
+    font-family: var(--font);
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  }
+  .quiz-opt-btn:hover:not(:disabled) { background: var(--accent); transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #000; }
+  .quiz-opt-btn:active:not(:disabled) { transform: translate(3px,3px); box-shadow: 1px 1px 0 #000; }
+  .quiz-opt-btn:disabled { cursor: default; }
+  .quiz-opt-btn.correct { background: var(--accent3) !important; border-color: #000 !important; color: #000 !important; }
+  .quiz-opt-btn.wrong { background: var(--red) !important; border-color: #000 !important; color: #fff !important; }
+  .quiz-hint { font-size: 0.88rem; font-weight: 800; margin-top: 8px; min-height: 22px; color: #000; }
+
+  .quiz-progress { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0 10px; }
+  .quiz-progress .q-label { font-weight: 900; font-size: 0.85rem; margin-right: 4px; }
+  .quiz-progress .q-dot {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: var(--bw) solid #000; background: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.85rem; box-shadow: 2px 2px 0 #000;
+  }
+  .quiz-progress .q-dot.now { background: var(--accent); }
+  .quiz-progress .q-dot.done { background: var(--accent3); }
+  .quiz-ticker {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 6px 14px;
+    margin: 10px 0 14px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .quiz-ticker .t-loss { color: var(--red); font-weight: 900; font-size: 1rem; font-family: var(--font-display); }
+
+  /* ─── Alarm banner ─── */
+  .alarm-active-banner {
+    display: none;
+    background: var(--red);
+    color: #fff;
+    text-align: center;
+    animation: bannerBlink 1s steps(2, jump-none) infinite;
+    position: relative;
+  }
+  .alarm-active-banner.show { display: block; }
+  .alarm-active-banner .time {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+    background: var(--gold);
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 0 16px;
+    box-shadow: 4px 4px 0 #000;
+  }
+  @keyframes bannerBlink { 0% { background: var(--red); } 100% { background: #ff6b6b; } }
+
+  .login-required { text-align: center; padding: 20px; font-size: 0.9rem; font-weight: 700; }
+
+  /* ═══════════════ MODAL ═══════════════ */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 5000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff;
+    color: #000;
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 92vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--sh-lg);
+    animation: modalIn 0.25s ease-out;
+  }
+  @keyframes modalIn { from { transform: scale(0.9) translateY(20px) rotate(-1deg); opacity: 0; } to { transform: scale(1) translateY(0) rotate(0); opacity: 1; } }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    background: var(--red);
+    color: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .modal-close:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+  .modal-close:active { transform: translate(2px,2px); box-shadow: 0 0 0 #000; }
+  .modal h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 900; margin-bottom: 6px; padding-right: 40px; display: flex; align-items: center; gap: 8px; }
+  .modal .subtitle { font-size: 0.8rem; font-weight: 700; opacity: 0.75; margin-bottom: 18px; }
+  .modal label {
+    font-size: 0.72rem;
+    font-weight: 900;
+    opacity: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  .modal input, .modal select {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: var(--bw) solid #000;
+    background: #fff;
+    color: #000;
+    font-family: var(--font);
+    font-size: 0.95rem;
+    font-weight: 700;
+    outline: none;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  }
+  .modal input::placeholder { color: rgba(0,0,0,0.4); font-weight: 500; }
+  .modal input:focus, .modal select:focus { background: #FFF9B8; box-shadow: 4px 4px 0 #000; transform: translate(-2px,-2px); }
+  .modal .btn { margin-top: 20px; }
+
+  .shake { animation: shakeInput 0.4s; }
+  @keyframes shakeInput {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; opacity: 1; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 0; border-top: 3px dotted #000; }
+
+  .pw-strength { height: 12px; border-radius: 999px; border: 2px solid #000; background: #fff; margin-top: 8px; overflow: hidden; }
+  .pw-strength-bar { height: 100%; width: 0%; transition: all 0.3s; border-right: 2px solid #000; }
+  .pw-strength-label { font-size: 0.72rem; font-weight: 700; margin-top: 4px; opacity: 1; }
+
+  /* ─── Bank selector ─── */
+  .bank-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+  .bank-option {
+    padding: 10px 6px;
+    border-radius: 12px;
+    border: var(--bw) solid #000;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 800;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  }
+  .bank-option:hover { background: var(--accent); transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+  .bank-option.selected { background: var(--accent3); transform: translate(2px,2px); box-shadow: 1px 1px 0 #000; }
+  .bank-option .bank-logo { font-size: 1.8rem; margin-bottom: 4px; }
+
+  /* ═══════════════ ALARM RINGING OVERLAY ═══════════════ */
+  .alarm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    overflow: hidden;
+    color: #000;
+  }
+  .alarm-overlay.show { display: flex; }
+
+  .alarm-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: var(--red);
+    background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.12) 0 18px, transparent 18px 36px);
+    animation: crazyBg 0.5s steps(1, end) infinite;
+  }
+  @keyframes crazyBg {
+    0% { background-color: #FF3333; }
+    20% { background-color: #FFE600; }
+    40% { background-color: #FF5C8D; }
+    60% { background-color: #00E5A3; }
+    80% { background-color: #A855F7; }
+    100% { background-color: #FF3333; }
+  }
+
+  .alarm-overlay > *:not(.alarm-bg) { position: relative; z-index: 1; }
+  .alarm-overlay.show .alarm-content { animation: shakeScreen 0.15s infinite alternate; }
+  @keyframes shakeScreen {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-4px, 3px) rotate(-1deg); }
+    50% { transform: translate(4px, -3px) rotate(1deg); }
+    75% { transform: translate(-3px, -4px) rotate(-0.5deg); }
+    100% { transform: translate(3px, 4px) rotate(0.5deg); }
+  }
+
+  .alarm-emoji { font-size: 5rem; animation: bounce 0.4s infinite alternate; filter: drop-shadow(4px 4px 0 #000); }
+  @keyframes bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-25px) scale(1.2); } }
+  @keyframes spin { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+
+  .alarm-message {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 900;
+    margin: 12px 0;
+    color: #000;
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 6px 18px;
+    box-shadow: var(--sh-lg);
+  }
+  .alarm-submessage {
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #000;
+    background: var(--gold);
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 3px 14px;
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  /* ─── Dismiss button (the villain) ─── */
+  #dismissBtn {
+    position: absolute;
+    padding: 16px 40px;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 900;
+    border: var(--bw) solid #000;
+    border-radius: 8px;
+    background: var(--accent3);
+    color: #000;
+    cursor: pointer;
+    z-index: 10;
+    transition: width 0.15s, height 0.15s, font-size 0.15s, padding 0.15s, border-radius 0.15s, transform 0.1s;
+    user-select: none;
+    touch-action: none;
+    white-space: nowrap;
+    box-shadow: var(--sh);
+  }
+  #dismissBtn:hover { background: #3dffc2; }
+
+  /* ─── Punishment area ─── */
+  .punishment-area { margin-top: 16px; width: 100%; max-width: 380px; }
+  .punishment-counter {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: #000;
+    margin-bottom: 8px;
+    font-weight: 900;
+  }
+  .punishment-counter:not(:empty) {
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 3px 14px;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .transfer-log { max-height: 190px; overflow-y: auto; text-align: left; padding: 2px 6px 6px 2px; }
+  .transfer-item {
+    background: #fff;
+    color: #000;
+    border: var(--bw) solid #000;
+    border-left: 10px solid var(--red);
+    padding: 8px 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    box-shadow: 4px 4px 0 #000;
+    animation: slideIn 0.35s ease-out;
+  }
+  @keyframes slideIn { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .transfer-item .amount { color: var(--red); font-weight: 900; font-size: 0.95rem; }
+  .transfer-item .to { color: #000; background: var(--gold); padding: 0 4px; border-radius: 4px; }
+
+  /* ─── Punishment Summary ─── */
+  .punishment-summary {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: var(--gold);
+    background-image: radial-gradient(#000 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    z-index: 10000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+    color: #000;
+  }
+  .punishment-summary.show { display: flex; }
+  .punishment-summary h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #fff;
+    background: var(--red);
+    border: var(--bw) solid #000;
+    border-radius: 999px;
+    padding: 4px 20px;
+    box-shadow: 4px 4px 0 #000;
+    margin-bottom: 14px;
+    transform: rotate(-2deg);
+  }
+  .punishment-summary .total {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--red);
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 16px;
+    padding: 0 22px;
+    box-shadow: var(--sh-lg);
+    margin: 10px 0 16px;
+  }
+  .punishment-summary p {
+    opacity: 1;
+    font-weight: 800;
+    margin-bottom: 22px;
+    background: #fff;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    padding: 6px 14px;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .punishment-summary .btn { width: auto; padding: 14px 40px; background: var(--accent); }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    top: 76px;
+    right: 16px;
+    padding: 12px 18px;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    z-index: 6000;
+    animation: toastIn 0.35s ease-out, toastOut 0.4s ease-in 2.6s forwards;
+    max-width: 320px;
+    color: #000;
+    box-shadow: var(--sh);
+  }
+  .toast-success { background: var(--accent3); }
+  .toast-error { background: var(--red); color: #fff; }
+  .toast-info { background: var(--accent2); }
+  @keyframes toastIn { from { transform: translateX(100px) rotate(4deg); opacity: 0; } to { transform: translateX(0) rotate(0); opacity: 1; } }
+  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-20px); } }
+
+  /* ─── Confetti ─── */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #000;
+    z-index: 10001;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+  }
+  @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+  /* ─── Custom Sound Studio ─── */
+  .modal-large { max-width: 480px; max-height: 88vh; overflow-y: auto; }
+  .custom-tabs {
+    display: flex;
+    gap: 6px;
+    background: #fff;
+    padding: 5px;
+    border: var(--bw) solid #000;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .custom-tab-btn {
+    flex: 1;
+    padding: 8px 6px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #000;
+    font-family: var(--font);
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: center;
+  }
+  .custom-tab-btn:hover { background: var(--gold); }
+  .custom-tab-btn.active { background: var(--accent); border-color: #000; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  .dropzone {
+    border: var(--bw) dashed #000;
+    border-radius: 12px;
+    padding: 22px 14px;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .dropzone:hover, .dropzone.dragover { background: var(--accent3); }
+  .dropzone-icon { font-size: 2.2rem; margin-bottom: 6px; }
+  .dropzone-text { font-size: 0.85rem; font-weight: 800; color: #000; }
+  .dropzone-sub { font-size: 0.7rem; font-weight: 600; opacity: 0.75; margin-top: 4px; }
+
+  .rec-container {
+    text-align: center;
+    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    border: var(--bw) solid #000;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .rec-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: var(--bw) solid #000;
+    background: var(--red);
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px auto;
+  }
+  .rec-btn:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 #000; }
+  .rec-btn.recording { animation: recPulse 0.7s infinite alternate; background: var(--gold); }
+  @keyframes recPulse { 0% { transform: scale(0.96); } 100% { transform: scale(1.1); } }
+  .rec-timer { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: #000; margin: 4px 0; font-variant-numeric: tabular-nums; }
+  .rec-status { font-size: 0.75rem; font-weight: 700; opacity: 0.85; }
+
+  .synth-studio {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    border: var(--bw) solid #000;
+    box-shadow: 3px 3px 0 #000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .synth-presets { display: flex; flex-wrap: wrap; gap: 6px; }
+  .synth-preset-btn {
+    padding: 5px 10px;
+    font-family: var(--font);
+    font-size: 0.72rem;
+    font-weight: 800;
+    border-radius: 999px;
+    border: 2px solid #000;
+    background: var(--gold);
+    color: #000;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .synth-preset-btn:hover { background: var(--accent); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #000; }
+  .synth-preset-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 #000; }
+  .synth-slider-group { text-align: left; }
+  .synth-slider-group label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; opacity: 1; margin-bottom: 4px; text-transform: none; letter-spacing: 0; margin-top: 0; }
+  .synth-slider-group input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; padding: 0; border: none; box-shadow: none; background: transparent; }
+  .synth-slider-group input[type="range"]:focus { box-shadow: none; transform: none; background: transparent; }
+  .wave-types { display: flex; gap: 6px; }
+  .wave-btn {
+    flex: 1;
+    padding: 6px;
+    font-family: var(--font);
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 8px;
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #000;
+  }
+  .wave-btn.active { background: var(--accent2); }
+
+  .preview-bar { display: flex; align-items: center; gap: 10px; margin: 12px 0 6px; }
+  .preview-bar .btn { margin-top: 0; font-size: 0.85rem; padding: 10px 8px; }
+  .custom-sound-list { margin-top: 20px; border-top: 3px dotted #000; padding-top: 14px; text-align: left; }
+  .custom-sound-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .custom-sound-item .info { display: flex; align-items: center; gap: 8px; }
+  .custom-sound-item .actions { display: flex; gap: 6px; }
+  .btn-icon {
+    background: var(--gold);
+    border: 2px solid #000;
+    border-radius: 6px;
+    color: #000;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    box-shadow: 2px 2px 0 #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-icon:hover { background: var(--accent3); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #000; }
+  .btn-icon:active { transform: translate(2px,2px); box-shadow: 0 0 0 #000; }
+  .btn-icon.del:hover { background: var(--red); color: #fff; }
+
+  @media (max-width: 480px) {
+    #currentTime { font-size: 2.8rem; padding: 2px 14px; }
+    .time-inputs input { width: 70px; height: 62px; font-size: 1.9rem; }
+    .bank-options { grid-template-columns: repeat(2, 1fr); }
+    .navbar { padding: 10px 12px; }
+    .navbar .logo { font-size: 0.85rem; }
+    .nav-btn { padding: 6px 10px; font-size: 0.72rem; }
+    .header h1 { font-size: 1.5rem; }
+    .toast { right: 10px; left: 10px; max-width: none; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ═══ FLOATING EMOJIS ═══ -->
+<div id="floatingEmojis"></div>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+  <div class="logo" id="navLogo">⏰ OuNY</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <!-- Language Toggle Button -->
+    <button class="nav-btn nav-btn-lang" id="langToggleBtn" onclick="toggleLanguage()">
+      🌐 <span id="langBtnText">EN</span>
+    </button>
+    <div class="nav-buttons" id="navGuest">
+      <button class="nav-btn nav-btn-login" id="navLoginBtn" onclick="openModal('loginModal')">🔑 ล็อกอิน</button>
+      <button class="nav-btn nav-btn-signup" id="navSignupBtn" onclick="openModal('signupModal')">🚀 สมัคร</button>
+    </div>
+    <div class="nav-user-info" id="navUser">
+      <div class="avatar" id="userAvatar">😎</div>
+      <span class="username" id="navUsername"></span>
+      <button class="nav-btn nav-btn-logout" id="navLogoutBtn" onclick="logout()">ออก</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <div class="header">
+    <h1 id="mainTitle">💣 OuNY</h1>
+    <p class="tagline" id="mainTagline">ไม่ตื่น = ตังค์หาย <span>💸</span> | ตื่นสาย = หมดตัว <span>💀</span></p>
+  </div>
+
+  <div class="clock-container">
+    <div id="currentTime">00:00:00</div>
+    <div id="currentDate"></div>
+  </div>
+
+  <!-- Alarm Active Banner -->
+  <div class="card alarm-active-banner" id="alarmBanner">
+    <div style="font-size:2rem;">💣🔥</div>
+    <div style="margin:6px 0;" id="bannerText">ระเบิดเวลาตั้งไว้</div>
+    <div class="time" id="bannerTime">--:--</div>
+    <div style="font-size:0.75rem;opacity:0.4;margin-top:6px;" id="bannerSub">ถอยยังทัน... ถ้ากล้า</div>
+  </div>
+
+  <!-- Bank Account Card -->
+  <div class="card bank-card" id="bankCard" onclick="handleBankCardClick()">
+    <div class="bank-icon" id="bankIcon">🏦</div>
+    <div class="card-title" style="justify-content:center;">
+      <span id="bankCardTitle">ผูกบัญชีลงโทษ</span>
+      <span class="badge" id="bankBadge">จำเป็น!</span>
+    </div>
+    <div class="bank-status" id="bankStatus">กดเพื่อผูกบัญชี — เงินของคุณกำลังรอ...</div>
+    <div class="bank-balance-big" id="bankBalanceBig" style="display:none;">฿10,000.00</div>
+  </div>
+
+  <!-- Alarm Setup Card -->
+  <div class="card" id="setupCard">
+    <div class="card-title">
+      <span id="setupCardTitle">🔔 ตั้งเวลาปลุก</span> 
+      <span class="badge">PRO GAMER</span>
+    </div>
+
+    <div class="time-inputs">
+      <input type="number" id="alarmHour" min="0" max="23" placeholder="ชม." value="07">
+      <span class="colon">:</span>
+      <input type="number" id="alarmMin" min="0" max="59" placeholder="นาที" value="00">
+    </div>
+
+    <div style="font-size:0.75rem;opacity:0.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;" id="soundLabel">🔊 เลือกเสียงทรมาน</div>
+    <div class="sound-options" id="soundOptionsContainer">
+      <div class="sound-option active" data-sound="chaos" id="soundChaos">😈 วุ่นวาย</div>
+      <div class="sound-option" data-sound="siren" id="soundSiren">🚨 ไซเรน</div>
+      <div class="sound-option" data-sound="rooster" id="soundRooster">🐓 ไก่ขัน</div>
+      <div class="sound-option" data-sound="baby" id="soundBaby">👶 เด็กร้อง</div>
+      <div class="sound-option" data-sound="drill" id="soundDrill">🔨 สว่านเช้า</div>
+      <div class="sound-option" data-sound="nyan" id="soundNyan">🌈 Nyan Cat</div>
+      <div class="sound-option" data-sound="morlam" id="soundMorlam" style="border-color:rgba(255,107,203,0.4);">🪗 หมอลำซิ่ง</div>
+      <div class="sound-option" data-sound="morlam_earrape" id="soundMorlamEarrape" style="border-color:rgba(255,23,68,0.5);color:#ff1744;">💥 หมอลำ EARRAPE</div>
+      <!-- Custom sound list items injected here -->
+      <div class="sound-option add-custom" id="addCustomSoundBtn" onclick="openCustomSoundModal()">➕ เพิ่มเสียงเอง</div>
+    </div>
+
+    <button class="btn btn-primary" id="setAlarmBtn" onclick="setAlarm()">
+      💣 ยอมรับชะตากรรม — ตั้งปลุก
+    </button>
+    <button class="btn btn-cancel" id="cancelAlarmBtn" style="display:none;" onclick="cancelAlarm()">
+      🏳️ ยกเลิก (ขี้ขลาด)
+    </button>
+  </div>
+
+  <!-- ─── WEEKLY LOSS DASHBOARD ─── -->
+  <div class="card" id="dashboardCard">
+    <div class="card-title">
+      <span id="dashTitle">📊 แดชบอร์ดคนตื่นสายประจำสัปดาห์</span>
+      <span class="badge" id="dashBadge" style="background:linear-gradient(135deg,var(--red),var(--orange));">🔥 รวมพลังคนหมดตัว</span>
+    </div>
+
+    <div class="dashboard-stats">
+      <div class="stat-box">
+        <div class="stat-label" id="statLossLabel">💸 เสียเงินสัปดาห์นี้</div>
+        <div class="stat-val red" id="dashWeeklyTotal">฿0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label" id="statVictimLabel">😴 ผู้โชคร้าย (ครั้ง)</div>
+        <div class="stat-val gold" id="dashVictimCount">0 ครั้ง</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label" id="statMaxLabel">👑 ยอดเสียสูงสุด</div>
+        <div class="stat-val pink" id="dashMaxLoss">฿0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label" id="statBenLabel">🎁 คนรับโชคสัปดาห์นี้</div>
+        <div class="stat-val cyan" id="dashTopBeneficiary">--</div>
+      </div>
+    </div>
+
+    <!-- 7-Day Loss Chart -->
+    <div class="chart-container">
+      <div style="font-size:0.75rem;opacity:0.6;margin-bottom:8px;text-align:left;" id="chartTitle">📈 สถิติเงินปลิว 7 วันล่าสุด (บาท)</div>
+      <div class="bar-chart" id="weeklyBarChart">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- Recent Losers List -->
+    <div style="font-size:0.75rem;opacity:0.6;margin-bottom:6px;text-align:left;" id="recentLosersTitle">👀 รายการโอนล่าสุดของคนไม่ตื่น</div>
+    <div class="recent-losers" id="recentLosersList">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     SIGNUP MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('signupModal')">✕</button>
+    <h2 id="signupModalTitle">🚀 สมัครสมาชิก</h2>
+    <p class="subtitle" id="signupModalSub">เข้าร่วมกองทัพคนตื่นเช้า (หรือเปล่า)</p>
+
+    <label id="signupEmailLabel">📧 อีเมล</label>
+    <input type="email" id="signupEmail" placeholder="sleepyhead@gmail.com">
+
+    <label id="signupNameLabel">👤 ชื่อผู้ใช้</label>
+    <input type="text" id="signupName" placeholder="ไอ้ขี้เซา">
+
+    <label id="signupPwLabel">🔒 รหัสผ่าน</label>
+    <input type="password" id="signupPw" placeholder="อย่าใช้ 1234 นะ..." oninput="checkPwStrength(this.value)">
+    <div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
+    <div class="pw-strength-label" id="pwLabel"></div>
+
+    <label id="signupPw2Label">🔒 ยืนยันรหัสผ่าน</label>
+    <input type="password" id="signupPw2" placeholder="เหมือนข้างบนนะ...">
+
+    <button class="btn btn-primary" id="signupSubmitBtn" onclick="doSignup()">🎉 สมัครเลย!</button>
+
+    <div class="divider" id="signupDivider">หรือ</div>
+    <button class="btn btn-cancel" id="signupToLoginBtn" onclick="closeModal('signupModal');openModal('loginModal')">มีบัญชีแล้ว → ล็อกอิน</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LOGIN MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 id="loginModalTitle">🔑 ล็อกอิน</h2>
+    <p class="subtitle" id="loginModalSub">กลับมาเสี่ยงตังค์อีกครั้ง</p>
+
+    <label id="loginIdLabel">📧 อีเมลหรือชื่อผู้ใช้</label>
+    <input type="text" id="loginId" placeholder="sleepyhead@gmail.com">
+
+    <label id="loginPwLabel">🔒 รหัสผ่าน</label>
+    <input type="password" id="loginPw" placeholder="จำได้มั้ย?">
+
+    <button class="btn btn-primary" id="loginSubmitBtn" onclick="doLogin()">🔓 เข้าสู่ระบบ</button>
+
+    <div class="divider" id="loginDivider">หรือ</div>
+    <button class="btn btn-cancel" id="loginToSignupBtn" onclick="closeModal('loginModal');openModal('signupModal')">ยังไม่มีบัญชี → สมัคร</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LINK BANK MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="bankModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bankModal')">✕</button>
+    <h2 id="bankModalTitle">🏦 ผูกบัญชีลงโทษ</h2>
+    <p class="subtitle" id="bankModalSub">(จำลอง — ไม่มีเงินจริงหายไปนะ! ...หรือเปล่า? 😏)</p>
+
+    <label id="bankSelectLabel">เลือกธนาคาร</label>
+    <div class="bank-options" id="bankOptions">
+      <div class="bank-option" data-bank="kbank" onclick="selectBank(this)">
+        <div class="bank-logo">💚</div>
+        <div id="bankKbank">กสิกร</div>
+      </div>
+      <div class="bank-option" data-bank="scb" onclick="selectBank(this)">
+        <div class="bank-logo">💜</div>
+        <div id="bankScb">ไทยพาณิชย์</div>
+      </div>
+      <div class="bank-option" data-bank="ktb" onclick="selectBank(this)">
+        <div class="bank-logo">💙</div>
+        <div id="bankKtb">กรุงไทย</div>
+      </div>
+      <div class="bank-option" data-bank="bbl" onclick="selectBank(this)">
+        <div class="bank-logo">🧡</div>
+        <div id="bankBbl">กรุงเทพ</div>
+      </div>
+      <div class="bank-option" data-bank="tmb" onclick="selectBank(this)">
+        <div class="bank-logo">💛</div>
+        <div id="bankTtb">TTB</div>
+      </div>
+      <div class="bank-option" data-bank="mattress" onclick="selectBank(this)">
+        <div class="bank-logo">🛏️</div>
+        <div id="bankMattress">ใต้หมอน</div>
+      </div>
+    </div>
+
+    <label id="bankAccNumLabel">หมายเลขบัญชี</label>
+    <input type="text" id="bankAccNum" placeholder="xxx-x-xxxxx-x" maxlength="14">
+
+    <label id="bankAccNameLabel">ชื่อเจ้าของบัญชี</label>
+    <input type="text" id="bankAccName" placeholder="นาย/นาง ขี้เซา">
+
+    <label id="bankBalanceLabel">ยอดเงินจำลอง (฿)</label>
+    <input type="number" id="bankAccBalance" placeholder="10000" value="10000">
+
+    <button class="btn btn-bank" id="bankSubmitBtn" onclick="doLinkBank()">🔗 ผูกบัญชี — ลงนามยอมจ่าย</button>
+  </div>
+</div>
+
+<!-- ═══ CUSTOM SOUND STUDIO MODAL ═══ -->
+<div class="modal-overlay" id="customSoundModal">
+  <div class="modal modal-large">
+    <button class="modal-close" onclick="closeCustomSoundModal()">✕</button>
+    <h2 id="customSoundModalTitle">🎵 สตูดิโอเพิ่มเสียงปลุกเอง</h2>
+    <p class="subtitle" id="customSoundModalSub">อัปโหลดไฟล์เสียง อัดเสียงตัวเอง หรือปรุงเสียงสังเคราะห์สุดกวน 🎧</p>
+
+    <!-- Tabs -->
+    <div class="custom-tabs">
+      <button class="custom-tab-btn active" id="tabBtnUpload" onclick="switchCustomTab('upload')">📁 อัปโหลดไฟล์</button>
+      <button class="custom-tab-btn" id="tabBtnMic" onclick="switchCustomTab('mic')">🎙️ อัดเสียงสด</button>
+      <button class="custom-tab-btn" id="tabBtnSynth" onclick="switchCustomTab('synth')">🎛️ ปรุงเสียงสังเคราะห์</button>
+    </div>
+
+    <!-- Tab 1: Upload File -->
+    <div class="tab-pane active" id="tabPaneUpload">
+      <div class="dropzone" id="audioDropzone" onclick="document.getElementById('customAudioFileInput').click()">
+        <div class="dropzone-icon">📁⚡</div>
+        <div class="dropzone-text" id="dropzoneText">คลิกเพื่อเลือกไฟล์เสียง หรือลากไฟล์มาวาง</div>
+        <div class="dropzone-sub" id="dropzoneSub">รองรับไฟล์ MP3, WAV, OGG, M4A, AAC, WebM (สูงสุด 10MB)</div>
+        <input type="file" id="customAudioFileInput" accept="audio/*" style="display:none;" onchange="handleAudioFileUpload(event)">
+      </div>
+
+      <div id="uploadPreviewArea" style="display:none; margin-top:14px;">
+        <label id="uploadNameLabel">🏷️ ตั้งชื่อเสียงนี้:</label>
+        <input type="text" id="uploadSoundName" placeholder="เช่น เสียงแม่บ่น, เพลงปลุกสะเทือนขวัญ">
+        
+        <div class="preview-bar">
+          <button class="btn btn-cancel" style="margin-top:0; flex:1;" id="uploadPreviewBtn" onclick="toggleUploadPreview()">▶️ ลองฟังเสียง</button>
+          <button class="btn btn-primary" style="flex:1;" id="uploadSaveBtn" onclick="saveUploadedSound()">💾 บันทึกเสียงนี้</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Mic Recording -->
+    <div class="tab-pane" id="tabPaneMic">
+      <div class="rec-container">
+        <button class="rec-btn" id="recBtn" onclick="toggleMicRecording()">🎙️</button>
+        <div class="rec-timer" id="recTimer">00:00</div>
+        <div class="rec-status" id="recStatus">กดปุ่มไมค์เพื่อเริ่มอัดเสียง (ตะโกน "ตื่นโว้ยยย" หรือเสียงตามใจชอบ)</div>
+      </div>
+
+      <div id="micPreviewArea" style="display:none; margin-top:14px;">
+        <label id="micNameLabel">🏷️ ตั้งชื่อเสียงอัด:</label>
+        <input type="text" id="micSoundName" placeholder="เช่น เสียงตะโกนปลุกผี">
+        
+        <div class="preview-bar">
+          <button class="btn btn-cancel" style="margin-top:0; flex:1;" id="micPreviewBtn" onclick="toggleMicPreview()">▶️ ลองฟังเสียงอัด</button>
+          <button class="btn btn-primary" style="flex:1;" id="micSaveBtn" onclick="saveRecordedSound()">💾 บันทึกเสียงนี้</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Meme Synth Studio -->
+    <div class="tab-pane" id="tabPaneSynth">
+      <div class="synth-studio">
+        <div style="font-size:0.75rem; opacity:0.6; text-align:left;" id="synthPresetLabel">⚡ เลือกพรีเซ็ตสำเร็จรูปสุดกวน:</div>
+        <div class="synth-presets">
+          <button class="synth-preset-btn" onclick="applySynthPreset('ufo')">🛸 ไซเรนยานแม่</button>
+          <button class="synth-preset-btn" onclick="applySynthPreset('mosquito')">🦟 ยุงบินข้างหู</button>
+          <button class="synth-preset-btn" onclick="applySynthPreset('truck')">🛻 ลำโพงรถพุ่มพวง</button>
+          <button class="synth-preset-btn" onclick="applySynthPreset('bass')">🔊 เบสกระแทกตับ</button>
+          <button class="synth-preset-btn" onclick="applySynthPreset('glitch')">👾 มนุษย์ต่างดาวรัว</button>
+        </div>
+
+        <div class="synth-slider-group">
+          <label><span id="synthWaveLabel">รูปคลื่นเสียง (Waveform):</span> <span id="synthWaveVal">Sawtooth</span></label>
+          <div class="wave-types">
+            <button class="wave-btn active" data-wave="sawtooth" onclick="setSynthWave('sawtooth', this)">Sawtooth</button>
+            <button class="wave-btn" data-wave="square" onclick="setSynthWave('square', this)">Square</button>
+            <button class="wave-btn" data-wave="triangle" onclick="setSynthWave('triangle', this)">Triangle</button>
+            <button class="wave-btn" data-wave="sine" onclick="setSynthWave('sine', this)">Sine</button>
+          </div>
+        </div>
+
+        <div class="synth-slider-group">
+          <label><span id="synthPitchLabel">ความถี่/ระดับเสียง (Pitch):</span> <span id="synthPitchVal">550 Hz</span></label>
+          <input type="range" id="synthPitch" min="80" max="2500" value="550" oninput="updateSynthVal('pitch', this.value)">
+        </div>
+
+        <div class="synth-slider-group">
+          <label><span id="synthModLabel">ความเร็วไซเรน/สั่น (Modulation):</span> <span id="synthModVal">8 Hz</span></label>
+          <input type="range" id="synthMod" min="1" max="30" value="8" oninput="updateSynthVal('mod', this.value)">
+        </div>
+
+        <div class="synth-slider-group">
+          <label><span id="synthDistLabel">ระดับความหูแตก (Earrape Factor):</span> <span id="synthDistVal">1.5x</span></label>
+          <input type="range" id="synthDist" min="0.5" max="4.0" step="0.5" value="1.5" oninput="updateSynthVal('dist', this.value)">
+        </div>
+
+        <label id="synthNameLabel">🏷️ ตั้งชื่อเสียงสังเคราะห์นี้:</label>
+        <input type="text" id="synthSoundName" placeholder="เช่น เสียงไซเรนอวกาศ" value="เสียงสังเคราะห์ของฉัน">
+
+        <div class="preview-bar">
+          <button class="btn btn-cancel" style="margin-top:0; flex:1;" id="synthPreviewBtn" onclick="toggleSynthPreview()">▶️ ลองฟังเสียง</button>
+          <button class="btn btn-primary" style="flex:1;" id="synthSaveBtn" onclick="saveSynthSound()">💾 บันทึกเสียงนี้</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Custom Sounds List -->
+    <div class="custom-sound-list" id="customSoundListArea">
+      <div style="font-size:0.75rem;opacity:0.6;margin-bottom:8px;font-weight:700;" id="savedCustomListTitle">📂 เสียงที่คุณสร้างไว้แล้ว (<span id="savedCustomCount">0</span> เสียง):</div>
+      <div id="savedCustomSoundsList">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ALARM RINGING OVERLAY ═══ -->
+<div class="alarm-overlay" id="alarmOverlay">
+  <div class="alarm-bg"></div>
+  <div class="alarm-content">
+    <div class="alarm-emoji" id="alarmEmoji">⏰</div>
+    <div class="alarm-message" id="alarmMsg">ตื่นนนนนนน!!! 🔥</div>
+    <div class="alarm-submessage" id="alarmSub">หาปุ่มปิดให้เจอนะ... ถ้าทัน 😏</div>
+
+    <!-- 🚨 LIVE RECIPIENT DISPLAY WHILE RINGING 🚨 -->
+    <div class="live-victim-card" id="liveVictimCard">
+      <div class="live-victim-title" id="liveVictimTitle">⚡ ผู้โชคดีที่กำลังได้รับเงินของคุณ:</div>
+      <div class="live-victim-body">
+        <div class="victim-avatar" id="liveVictimAvatar">🐱</div>
+        <div class="victim-info">
+          <div class="victim-name" id="liveVictimName">แมวส้มหน้าปากซอย</div>
+          <div style="font-size:0.75rem;opacity:0.6;" id="liveVictimSub">ยอดที่เพิ่งโอนไปให้:</div>
+          <div class="victim-loss" id="liveVictimAmount">+฿0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button id="dismissBtn">ปิดปลุก 😴</button>
+
+  <div class="punishment-area">
+    <div class="punishment-counter" id="punishCounter"></div>
+    <div class="transfer-log" id="transferLog"></div>
+  </div>
+</div>
+
+<!-- ═══ QUIZ MODAL (BEFORE DISMISS) ═══ -->
+<div class="quiz-modal-overlay" id="quizModal">
+  <div class="quiz-modal">
+    <div class="quiz-badge math" id="quizBadge">🧮 ภารกิจปลุกสมอง</div>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div style="font-size:0.85rem;opacity:0.6;" id="quizSubtitle">ต้องตอบถูกติดกัน 3 ข้อถึงจะปิดปลุกได้ (ผิดข้อเดียว = โดนปรับ + เริ่มใหม่!) 💀</div>
+    
+    <!-- Real-time ticking loss indicator inside quiz modal -->
+    <div class="quiz-ticker">
+      <span id="quizTickerLabel">💸 เงินกำลังไหลออกเรื่อยๆ:</span>
+      <span class="t-loss" id="quizLossTicker">-฿0</span>
+    </div>
+
+    <div class="quiz-question" id="quizQuestion">12 × 15 = ?</div>
+    <div class="quiz-options" id="quizOptions">
+      <!-- Options injected by JS -->
+    </div>
+    <div class="quiz-hint" id="quizFeedback"></div>
+  </div>
+</div>
+
+<!-- ═══ PUNISHMENT SUMMARY ═══ -->
+<div class="punishment-summary" id="punishSummary">
+  <div style="font-size:4rem;">💀</div>
+  <h2 id="summaryTitle">สรุปความเสียหาย</h2>
+  <div class="total" id="summaryTotal">฿0</div>
+  <p id="summaryMsg">ครั้งหน้าตื่นเร็วกว่านี้นะ...</p>
+  <button class="btn btn-primary" id="summaryBtn" onclick="closeSummary()">😭 รับทราบ ฉันจน</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// I18N (THAI / ENGLISH) DICTIONARY
+// ═══════════════════════════════════════════
+let currentLang = localStorage.getItem('alarmLang') || 'th';
+
+const translations = {
+  th: {
+    navLogo: '⏰ OuNY',
+    navLoginBtn: '🔑 ล็อกอิน',
+    navSignupBtn: '🚀 สมัคร',
+    navLogoutBtn: 'ออก',
+    mainTitle: '💣 OuNY',
+    mainTagline: 'ไม่ตื่น = ตังค์หาย <span>💸</span> | ตื่นสาย = หมดตัว <span>💀</span>',
+    bannerText: 'ระเบิดเวลาตั้งไว้',
+    bannerSub: 'ถอยยังทัน... ถ้ากล้า',
+    bankCardTitleDefault: 'ผูกบัญชีลงโทษ',
+    bankBadgeRequired: 'จำเป็น!',
+    bankBadgeLinked: '✅ ผูกแล้ว',
+    bankStatusDefault: 'กดเพื่อผูกบัญชี — เงินของคุณกำลังรอ...',
+    setupCardTitle: '🔔 ตั้งเวลาปลุก',
+    soundLabel: '🔊 เลือกเสียงทรมาน',
+    soundChaos: '😈 วุ่นวาย',
+    soundSiren: '🚨 ไซเรน',
+    soundRooster: '🐓 ไก่ขัน',
+    soundBaby: '👶 เด็กร้อง',
+    soundDrill: '🔨 สว่านเช้า',
+    soundNyan: '🌈 Nyan Cat',
+    soundMorlam: '🪗 หมอลำซิ่ง',
+    soundMorlamEarrape: '💥 หมอลำ EARRAPE',
+    setAlarmBtn: '💣 ยอมรับชะตากรรม — ตั้งปลุก',
+    cancelAlarmBtn: '🏳️ ยกเลิก (ขี้ขลาด)',
+    dashTitle: '📊 แดชบอร์ดคนตื่นสายประจำสัปดาห์',
+    dashBadge: '🔥 รวมพลังคนหมดตัว',
+    statLossLabel: '💸 เสียเงินสัปดาห์นี้',
+    statVictimLabel: '😴 ผู้โชคร้าย (ครั้ง)',
+    statMaxLabel: '👑 ยอดเสียสูงสุด',
+    statBenLabel: '🎁 คนรับโชคสัปดาห์นี้',
+    chartTitle: '📈 สถิติเงินปลิว 7 วันล่าสุด (บาท)',
+    recentLosersTitle: '👀 รายการโอนล่าสุดของคนไม่ตื่น',
+    signupModalTitle: '🚀 สมัครสมาชิก',
+    signupModalSub: 'เข้าร่วมกองทัพคนตื่นเช้า (หรือเปล่า)',
+    signupEmailLabel: '📧 อีเมล',
+    signupNameLabel: '👤 ชื่อผู้ใช้',
+    signupPwLabel: '🔒 รหัสผ่าน',
+    signupPw2Label: '🔒 ยืนยันรหัสผ่าน',
+    signupSubmitBtn: '🎉 สมัครเลย!',
+    signupDivider: 'หรือ',
+    signupToLoginBtn: 'มีบัญชีแล้ว → ล็อกอิน',
+    loginModalTitle: '🔑 ล็อกอิน',
+    loginModalSub: 'กลับมาเสี่ยงตังค์อีกครั้ง',
+    loginIdLabel: '📧 อีเมลหรือชื่อผู้ใช้',
+    loginPwLabel: '🔒 รหัสผ่าน',
+    loginSubmitBtn: '🔓 เข้าสู่ระบบ',
+    loginDivider: 'หรือ',
+    loginToSignupBtn: 'ยังไม่มีบัญชี → สมัคร',
+    bankModalTitle: '🏦 ผูกบัญชีลงโทษ',
+    bankModalSub: '(จำลอง — ไม่มีเงินจริงหายไปนะ! ...หรือเปล่า? 😏)',
+    bankSelectLabel: 'เลือกธนาคาร',
+    bankAccNumLabel: 'หมายเลขบัญชี',
+    bankAccNameLabel: 'ชื่อเจ้าของบัญชี',
+    bankBalanceLabel: 'ยอดเงินจำลอง (฿)',
+    bankSubmitBtn: '🔗 ผูกบัญชี — ลงนามยอมจ่าย',
+    bankKbank: 'กสิกร',
+    bankScb: 'ไทยพาณิชย์',
+    bankKtb: 'กรุงไทย',
+    bankBbl: 'กรุงเทพ',
+    bankTtb: 'TTB',
+    bankMattress: 'ใต้หมอน',
+    alarmMsg: 'ตื่นนนนนนน!!! 🔥',
+    alarmSub: 'หาปุ่มปิดให้เจอนะ... ถ้าทัน 😏',
+    liveVictimTitle: '⚡ ผู้โชคดีที่กำลังได้รับเงินของคุณ:',
+    liveVictimSub: 'ยอดที่เพิ่งโอนไปให้:',
+    quizSubtitle: 'ต้องตอบถูกติดกัน 3 ข้อถึงจะปิดปลุกได้ (ผิดข้อเดียว = โดนปรับ + เริ่มใหม่!) 💀',
+    quizTickerLabel: '💸 เงินกำลังไหลออกเรื่อยๆ:',
+    summaryTitle: 'สรุปความเสียหาย',
+    summaryBtn: '😭 รับทราบ ฉันจน',
+    dismissBtnTexts: ['ปิดปลุก 😴','กดตรงนี้!','จริงๆ ตรงนี้!','ไม่ใช่ ตรงนี้!','🤏 เล็กจัง','หาเจอมั้ย?','เร็วๆ!','💤','zzz...','กดสิ กดสิ!','ตื่นแล้วกด!','👆','🫵 กดเลย','ถ้ากล้า...','อยู่นี่~','ว่ะ!','🏃 หนีอีกแล้ว'],
+    addCustomSoundBtn: '➕ เพิ่มเสียงเอง',
+    customSoundModalTitle: '🎵 สตูดิโอเพิ่มเสียงปลุกเอง',
+    customSoundModalSub: 'อัปโหลดไฟล์เสียง อัดเสียงตัวเอง หรือปรุงเสียงสังเคราะห์สุดกวน 🎧',
+    tabBtnUpload: '📁 อัปโหลดไฟล์',
+    tabBtnMic: '🎙️ อัดเสียงสด',
+    tabBtnSynth: '🎛️ ปรุงเสียงสังเคราะห์',
+    dropzoneText: 'คลิกเพื่อเลือกไฟล์เสียง หรือลากไฟล์มาวาง',
+    dropzoneSub: 'รองรับไฟล์ MP3, WAV, OGG, M4A, AAC, WebM (สูงสุด 10MB)',
+    uploadNameLabel: '🏷️ ตั้งชื่อเสียงนี้:',
+    uploadPreviewBtn: '▶️ ลองฟังเสียง',
+    uploadSaveBtn: '💾 บันทึกเสียงนี้',
+    recStatus: 'กดปุ่มไมค์เพื่อเริ่มอัดเสียง (ตะโกน "ตื่นโว้ยยย" หรือเสียงตามใจชอบ)',
+    micNameLabel: '🏷️ ตั้งชื่อเสียงอัด:',
+    micPreviewBtn: '▶️ ลองฟังเสียงอัด',
+    micSaveBtn: '💾 บันทึกเสียงนี้',
+    synthPresetLabel: '⚡ เลือกพรีเซ็ตสำเร็จรูปสุดกวน:',
+    synthWaveLabel: 'รูปคลื่นเสียง (Waveform):',
+    synthPitchLabel: 'ความถี่/ระดับเสียง (Pitch):',
+    synthModLabel: 'ความเร็วไซเรน/สั่น (Modulation):',
+    synthDistLabel: 'ระดับความหูแตก (Earrape Factor):',
+    synthNameLabel: '🏷️ ตั้งชื่อเสียงสังเคราะห์นี้:',
+    synthPreviewBtn: '▶️ ลองฟังเสียง',
+    synthSaveBtn: '💾 บันทึกเสียงนี้',
+    savedCustomListTitle: '📂 เสียงที่คุณสร้างไว้แล้ว'
+  },
+  en: {
+    navLogo: '⏰ OuNY',
+    navLoginBtn: '🔑 Login',
+    navSignupBtn: '🚀 Sign Up',
+    navLogoutBtn: 'Logout',
+    mainTitle: '💣 OuNY',
+    mainTagline: 'Sleep in = Money gone <span>💸</span> | Wake up late = Broke <span>💀</span>',
+    bannerText: 'Time bomb armed for',
+    bannerSub: 'You can still back out... coward',
+    bankCardTitleDefault: 'Link Penalty Bank Account',
+    bankBadgeRequired: 'MANDATORY!',
+    bankBadgeLinked: '✅ Linked',
+    bankStatusDefault: 'Tap to link account — your money awaits...',
+    setupCardTitle: '🔔 Set Alarm Time',
+    soundLabel: '🔊 Choose Torture Sound',
+    soundChaos: '😈 Pure Chaos',
+    soundSiren: '🚨 Red Siren',
+    soundRooster: '🐓 Screaming Rooster',
+    soundBaby: '👶 Crying Toddler',
+    soundDrill: '🔨 7AM Drill',
+    soundNyan: '🌈 Nyan Cat',
+    soundMorlam: '🪗 Mor Lam Sing',
+    soundMorlamEarrape: '💥 Mor Lam EARRAPE',
+    setAlarmBtn: '💣 Accept Your Fate — Set Alarm',
+    cancelAlarmBtn: '🏳️ Give Up (Coward)',
+    dashTitle: '📊 Weekly Sleepyhead Loss Dashboard',
+    dashBadge: '🔥 United We Go Broke',
+    statLossLabel: '💸 Lost This Week',
+    statVictimLabel: '😴 Total Snoozes',
+    statMaxLabel: '👑 Highest Daily Loss',
+    statBenLabel: '🎁 Top Lucky Beneficiary',
+    chartTitle: '📈 7-Day Money Loss Trends (THB)',
+    recentLosersTitle: '👀 Live Feed of Sleepy Donors',
+    signupModalTitle: '🚀 Create Account',
+    signupModalSub: 'Join the army of morning survivors (maybe)',
+    signupEmailLabel: '📧 Email Address',
+    signupNameLabel: '👤 Username',
+    signupPwLabel: '🔒 Password',
+    signupPw2Label: '🔒 Confirm Password',
+    signupSubmitBtn: '🎉 Sign Up Now!',
+    signupDivider: 'or',
+    signupToLoginBtn: 'Already have an account? → Login',
+    loginModalTitle: '🔑 Welcome Back',
+    loginModalSub: 'Ready to risk your wallet again?',
+    loginIdLabel: '📧 Email or Username',
+    loginPwLabel: '🔒 Password',
+    loginSubmitBtn: '🔓 Login',
+    loginDivider: 'or',
+    loginToSignupBtn: 'New here? → Sign Up',
+    bankModalTitle: '🏦 Link Penalty Account',
+    bankModalSub: '(Simulation — No real money leaves! ...or does it? 😏)',
+    bankSelectLabel: 'Select Bank',
+    bankAccNumLabel: 'Account Number',
+    bankAccNameLabel: 'Account Holder Name',
+    bankBalanceLabel: 'Demo Starting Balance (฿)',
+    bankSubmitBtn: '🔗 Link Account — I Agree to Lose Money',
+    bankKbank: 'Kasikorn',
+    bankScb: 'SCB',
+    bankKtb: 'Krungthai',
+    bankBbl: 'Bangkok Bank',
+    bankTtb: 'TTB',
+    bankMattress: 'Under Mattress',
+    alarmMsg: 'WAAAAKE UUUUP!!! 🔥',
+    alarmSub: 'Catch the button... if you dare 😏',
+    liveVictimTitle: '⚡ Lucky soul receiving your money:',
+    liveVictimSub: 'Transferred just now:',
+    quizSubtitle: 'Answer 3 in a row to stop the alarm (one mistake = fine + start over!) 💀',
+    quizTickerLabel: '💸 Money draining away live:',
+    summaryTitle: 'Damage Report',
+    summaryBtn: '😭 Acknowledged. I am broke.',
+    dismissBtnTexts: ['Dismiss 😴','Click Here!','No, here!','Too slow!','🤏 So tiny','Catch me!','Hurry up!','💤','zzz...','Click it!','Wake up!','👆','🫵 Press me','If you dare...','Over here~','Whoosh!','🏃 Dodged again'],
+    addCustomSoundBtn: '➕ Custom Sound',
+    customSoundModalTitle: '🎵 Custom Alarm Studio',
+    customSoundModalSub: 'Upload audio files, record your voice, or craft meme synthesizer sounds 🎧',
+    tabBtnUpload: '📁 Upload File',
+    tabBtnMic: '🎙️ Mic Record',
+    tabBtnSynth: '🎛️ Synth Studio',
+    dropzoneText: 'Click to select audio file or drag & drop here',
+    dropzoneSub: 'Supports MP3, WAV, OGG, M4A, AAC, WebM (Up to 10MB)',
+    uploadNameLabel: '🏷️ Sound Name:',
+    uploadPreviewBtn: '▶️ Preview',
+    uploadSaveBtn: '💾 Save Sound',
+    recStatus: 'Tap mic to record (shout "WAKE UP!" or any meme noise)',
+    micNameLabel: '🏷️ Recorded Name:',
+    micPreviewBtn: '▶️ Preview Recording',
+    micSaveBtn: '💾 Save Recording',
+    synthPresetLabel: '⚡ Quick Meme Presets:',
+    synthWaveLabel: 'Waveform:',
+    synthPitchLabel: 'Pitch / Frequency:',
+    synthModLabel: 'Modulation Speed:',
+    synthDistLabel: 'Earrape Distortion:',
+    synthNameLabel: '🏷️ Synth Sound Name:',
+    synthPreviewBtn: '▶️ Preview Synth',
+    synthSaveBtn: '💾 Save Synth Sound',
+    savedCustomListTitle: '📂 Your Custom Sounds'
+  }
+};
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('alarmLang', lang);
+  const langBtn = document.getElementById('langBtnText');
+  if (langBtn) langBtn.textContent = lang === 'th' ? 'EN' : 'TH';
+
+  const t = translations[lang];
+  for (const [id, text] of Object.entries(t)) {
+    const el = document.getElementById(id);
+    if (el && typeof text === 'string') {
+      if (text.includes('<span')) el.innerHTML = text;
+      else el.textContent = text;
+    }
+  }
+
+  // Update bank card badge and title if not linked
+  if (!linkedBank) {
+    const titleEl = document.getElementById('bankCardTitle');
+    const badgeEl = document.getElementById('bankBadge');
+    const statusEl = document.getElementById('bankStatus');
+    if (titleEl) titleEl.textContent = t.bankCardTitleDefault;
+    if (badgeEl) badgeEl.textContent = t.bankBadgeRequired;
+    if (statusEl) statusEl.textContent = t.bankStatusDefault;
+  }
+
+  updateClock();
+  renderDashboard();
+  renderSoundOptions();
+  renderCustomSoundList();
+}
+
+function toggleLanguage() {
+  const nextLang = currentLang === 'th' ? 'en' : 'th';
+  setLanguage(nextLang);
+  showToast(nextLang === 'en' ? 'Switched to English 🇬🇧' : 'เปลี่ยนเป็นภาษาไทย 🇹🇭', 'success');
+}
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentUser = null; // { email, name }
+let linkedBank = null;  // { bank, accNum, accName, balance }
+let alarmTime = null;
+let isRinging = false;
+let balance = 0;
+let totalPunished = 0;
+let punishInterval = null;
+let selectedSound = 'chaos';
+let audioCtx = null;
+let currentOscillators = [];
+let dismissMoveInterval = null;
+let dismissResizeInterval = null;
+let selectedBankEl = null;
+
+// Custom Sound State
+let customSounds = JSON.parse(localStorage.getItem('customAlarmSounds') || '[]');
+let activePreviewAudio = null;
+let customAudioPlayer = null;
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordedAudioDataUrl = null;
+let recTimerInterval = null;
+let recSeconds = 0;
+let uploadedAudioDataUrl = null;
+let currentSynthWave = 'sawtooth';
+let activePreviewSynth = null;
+
+// ─── Funny recipients with avatars (Bilingual support) ───
+const funnyRecipients = [
+  { nameTh: "ลุงข้างบ้านที่ชอบเปิดเพลงตี 3", nameEn: "Neighbor blasting music at 3 AM", avatar: "👴" },
+  { nameTh: "แมวส้มหน้าปากซอย", nameEn: "Ginger street cat down the alley", avatar: "🐱" },
+  { nameTh: "พี่วินมอไซค์ที่ไม่เคยทอน", nameEn: "Motorbike taxi who never gives change", avatar: "🛵" },
+  { nameTh: "ร้านชาบูที่ไม่เคยได้ไป", nameEn: "Shabu buffet you never went to", avatar: "🍲" },
+  { nameTh: "เพื่อนที่ยืมเงินแล้วไม่คืน", nameEn: "Friend who borrowed $ and vanished", avatar: "🤡" },
+  { nameTh: "คนแปลกหน้าใน 7-11", nameEn: "Random stranger in 7-Eleven", avatar: "🏪" },
+  { nameTh: "ยายขายลอตเตอรี่หน้าวัด", nameEn: "Lottery grandma outside temple", avatar: "👵" },
+  { nameTh: "แอดมินเพจมีมที่ชอบดู", nameEn: "Admin of your favorite meme page", avatar: "📱" },
+  { nameTh: "พี่ส่งอาหารที่กดให้ 5 ดาว", nameEn: "5-star rated food delivery rider", avatar: "🥡" },
+  { nameTh: "น้องหมาจรจัดที่เห่าทุกคืน", nameEn: "Stray dog barking every midnight", avatar: "🐕" },
+  { nameTh: "DJ ในผับที่ไม่เคยไป", nameEn: "DJ at the club you never visit", avatar: "🎧" },
+  { nameTh: "คนที่นั่งข้างๆ บน BTS เมื่อวาน", nameEn: "Person sitting next to you on subway", avatar: "🚇" },
+  { nameTh: "ไอ้เพื่อนที่ส่งมีมตอนตี 4", nameEn: "Buddy sending memes at 4 AM", avatar: "👻" },
+  { nameTh: "คนขับแท็กซี่ที่ปฏิเสธ", nameEn: "Taxi driver who refused to take you", avatar: "🚕" },
+  { nameTh: "แฟนเก่า (อ๊ะ!)", nameEn: "Your Ex (Oops!)", avatar: "💔" },
+  { nameTh: "เจ้าของหอที่ขึ้นค่าเช่า", nameEn: "Landlord who raised rent", avatar: "🏢" },
+  { nameTh: "บาริสต้าที่จำออเดอร์ได้", nameEn: "Barista who remembers your coffee", avatar: "☕" },
+  { nameTh: "โค้ชฟิตเนสที่ไม่เคยไปหา", nameEn: "Gym coach you've ghosted for months", avatar: "🏋️" },
+  { nameTh: "นักร้องเปิดหมวกหน้า MBK", nameEn: "Busker singer outside the mall", avatar: "🎸" },
+  { nameTh: "คนขายของบน TikTok Live ตอนตี 2", nameEn: "TikTok live streamer selling snacks at 2 AM", avatar: "💃" },
+  { nameTh: "หมอฟันที่นัดไว้แล้วไม่ไป", nameEn: "Dentist you missed appointment with", avatar: "🦷" },
+  { nameTh: "ป้าข้าวแกงหน้าออฟฟิศ", nameEn: "Curry rice auntie outside office", avatar: "🍛" }
+];
+
+const alarmMessagesTh = [
+  "ตื่นนนนนนน!!! 🔥","เงินกำลังจะหายยยย!! 💸","สติ๊!! ตื่นได้แล้ว!! 😱",
+  "บัญชีร้องไห้อยู่!! 😭","ถ้าไม่ตื่น จะจนนนน!! 🏚️","ตื่นเดี๋ยวนี้! ตังค์ไหลออก!! 🚰💰",
+  "เฮ้! ขยับร่าง! 💀","ATM กำลังร้องเพลงอำลา 🎵","เงินบอกลาแล้วจ้า~~ 👋",
+  "ธนาคารส่งความเสียใจมาให้ 🏦😢"
+];
+const alarmMessagesEn = [
+  "WAAAAKE UUUUP!!! 🔥","Money is flying away!! 💸","Get your senses together!! 😱",
+  "Your bank account is weeping!! 😭","If you snooze, you lose (literally)!! 🏚️","Get up now! Wallet leaking!! 🚰💰",
+  "Move your body! 💀","ATM is playing a farewell song 🎵","Say goodbye to your savings~~ 👋",
+  "Bank is sending its deepest condolences 🏦😢"
+];
+
+const punishMessagesTh = [
+  "ยังไม่ตื่นอีก? ก็ได้... 💸","เงินลาก่อนนน~ 👋💰","Cha-ching! ไม่ใช่เงินเข้านะ 😏",
+  "หลับสบายเนอะ? เงินไม่สบาย 🤒","โอนไปเรียบร้อย เจ้าของเดิมตื่นสาย 🫡",
+  "ATM ร้องไห้แทนนน 😢","กด Snooze = กด โอน 💳","เดี๋ยวมีเงินเข้า... เข้าคนอื่น 🫠",
+  "ฝันดีนะ ฝันว่ารวย... แต่จริงไม่ใช่ 🌙"
+];
+const punishMessagesEn = [
+  "Still sleeping? Alright then... 💸","Goodbye sweet savings~ 👋💰","Cha-ching! (Deduction alert) 😏",
+  "Sleep well? Your wallet is shivering 🤒","Transferred! Owner too lazy to wake up 🫡",
+  "ATM cries on your behalf 😢","Snooze = Instant wire transfer 💳","Money transferred... to someone else 🫠",
+  "Sweet dreams of being rich... reality bites 🌙"
+];
+
+const funnyAvatars = ['😎','🤠','🥸','🤡','👻','💀','🤖','👾','🐱','🐶','🦊','🐸','🐧','🐵'];
+
+// ═══════════════════════════════════════════
+// FLOATING EMOJIS (background decoration)
+// ═══════════════════════════════════════════
+function spawnFloatingEmojis() {
+  const container = document.getElementById('floatingEmojis');
+  const emojis = ['💸','💰','⏰','💤','🔔','💣','🛏️','☕','🌅','😴','💳','🏦','🐓','🔥','😱'];
+  for (let i = 0; i < 15; i++) {
+    const el = document.createElement('div');
+    el.className = 'floating-emoji';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.animationDuration = (8 + Math.random() * 12) + 's';
+    el.style.animationDelay = (Math.random() * 10) + 's';
+    el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+    container.appendChild(el);
+  }
+}
+spawnFloatingEmojis();
+
+// ═══════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('currentTime').textContent = `${h}:${m}:${s}`;
+
+  if (currentLang === 'th') {
+    const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    document.getElementById('currentDate').textContent =
+      `วัน${days[now.getDay()]}ที่ ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear() + 543}`;
+  } else {
+    const daysEn = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const monthsEn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('currentDate').textContent =
+      `${daysEn[now.getDay()]}, ${monthsEn[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  }
+
+  if (alarmTime && !isRinging) {
+    if (now.getHours() === alarmTime.h && now.getMinutes() === alarmTime.m && now.getSeconds() === 0) {
+      triggerAlarm();
+    }
+  }
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════════════════════════════
+// TOASTS
+// ═══════════════════════════════════════════
+function showToast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ═══════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════
+function spawnConfetti(count = 40) {
+  const colors = ['#ff2d75','#7c3aed','#00f0ff','#ffd700','#06d6a0','#ff8c00','#ff6bcb'];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (6 + Math.random() * 10) + 'px';
+    piece.style.height = (6 + Math.random() * 10) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    piece.style.animationDelay = (Math.random() * 0.5) + 's';
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 4000);
+  }
+}
+
+// ═══════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+
+// ═══════════════════════════════════════════
+// SIGNUP
+// ═══════════════════════════════════════════
+function doSignup() {
+  const email = document.getElementById('signupEmail').value.trim();
+  const name = document.getElementById('signupName').value.trim();
+  const pw = document.getElementById('signupPw').value;
+  const pw2 = document.getElementById('signupPw2').value;
+
+  if (!email) { shakeEl('signupEmail'); showToast('ใส่อีเมลด้วย! 📧', 'error'); return; }
+  if (!name) { shakeEl('signupName'); showToast('ใส่ชื่อด้วย! 👤', 'error'); return; }
+  if (pw.length < 4) { shakeEl('signupPw'); showToast('รหัสสั้นไป ไม่ต่างจากเลขบัตร ATM 😤', 'error'); return; }
+  if (pw !== pw2) { shakeEl('signupPw2'); showToast('รหัสไม่ตรงกัน! ตื่นยังไม่หายงัวเงีย? 😵', 'error'); return; }
+
+  // Save to localStorage
+  localStorage.setItem('alarmUser', JSON.stringify({ email, name, pw }));
+  currentUser = { email, name };
+  updateNavUI();
+  closeModal('signupModal');
+  spawnConfetti();
+  showToast(`ยินดีต้อนรับ ${name}! 🎉 เตรียมตัวสูญเสียเงิน~`, 'success');
+}
+
+function doLogin() {
+  const id = document.getElementById('loginId').value.trim();
+  const pw = document.getElementById('loginPw').value;
+
+  if (!id) { shakeEl('loginId'); showToast('ใส่อีเมลหรือชื่อผู้ใช้! 🤦', 'error'); return; }
+  if (!pw) { shakeEl('loginPw'); showToast('ใส่รหัสผ่านด้วย! 🔒', 'error'); return; }
+
+  const saved = JSON.parse(localStorage.getItem('alarmUser') || 'null');
+  if (!saved) {
+    showToast('ยังไม่ได้สมัคร! ไปสมัครก่อน 🚀', 'error');
+    return;
+  }
+  if ((id !== saved.email && id !== saved.name) || pw !== saved.pw) {
+    shakeEl('loginPw');
+    showToast('อีเมล/ชื่อ หรือรหัสผ่านผิด 😵‍💫', 'error');
+    return;
+  }
+
+  currentUser = { email: saved.email, name: saved.name };
+  updateNavUI();
+  closeModal('loginModal');
+  showToast(`กลับมาแล้ว ${saved.name}! 💪 เงินยังอยู่มั้ย?`, 'success');
+
+  // Restore bank if any
+  const bankData = JSON.parse(localStorage.getItem('alarmBank') || 'null');
+  if (bankData) {
+    linkedBank = bankData;
+    balance = bankData.balance;
+    updateBankCardUI();
+  }
+}
+
+function logout() {
+  currentUser = null;
+  linkedBank = null;
+  cancelAlarm();
+  updateNavUI();
+  resetBankCardUI();
+  showToast('ออกจากระบบแล้ว 👋 เงินปลอดภัย... ชั่วคราว', 'info');
+}
+
+function updateNavUI() {
+  if (currentUser) {
+    document.getElementById('navGuest').style.display = 'none';
+    document.getElementById('navUser').style.display = 'flex';
+    document.getElementById('navUsername').textContent = currentUser.name;
+    document.getElementById('userAvatar').textContent = funnyAvatars[Math.floor(Math.random() * funnyAvatars.length)];
+  } else {
+    document.getElementById('navGuest').style.display = 'flex';
+    document.getElementById('navUser').style.display = 'none';
+  }
+}
+
+function shakeEl(id) {
+  const el = document.getElementById(id);
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+
+// ─── Password Strength ───
+function checkPwStrength(pw) {
+  const bar = document.getElementById('pwBar');
+  const label = document.getElementById('pwLabel');
+  let score = 0;
+  if (pw.length >= 4) score++;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  const levels = [
+    { w: '20%', color: '#ff1744', text: '💀 อ่อนมาก — เหมือนความตั้งใจตื่นเช้า' },
+    { w: '40%', color: '#ff8c00', text: '😕 อ่อน — แมวเดินผ่านก็เดาได้' },
+    { w: '60%', color: '#ffd700', text: '😐 พอใช้ — เหมือนกาแฟร้านสะดวกซื้อ' },
+    { w: '80%', color: '#06d6a0', text: '💪 แข็งแรง — เหมือนเสียงปลุกตอนตี 5' },
+    { w: '100%', color: '#00f0ff', text: '🔐 แกร่งมาก — Fort Knox ยังอาย' },
+  ];
+  const level = levels[Math.min(score, 4)];
+  bar.style.width = level.w;
+  bar.style.background = level.color;
+  label.textContent = pw.length > 0 ? level.text : '';
+}
+
+// ═══════════════════════════════════════════
+// LINK BANK
+// ═══════════════════════════════════════════
+function handleBankCardClick() {
+  if (linkedBank) return;
+  if (!currentUser) {
+    showToast('ล็อกอินก่อนนะ ถึงจะมาเสี่ยงเงินได้ 🔑', 'error');
+    openModal('loginModal');
+    return;
+  }
+  openModal('bankModal');
+}
+
+function selectBank(el) {
+  document.querySelectorAll('.bank-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedBankEl = el;
+}
+
+function doLinkBank() {
+  if (!selectedBankEl) { showToast('เลือกธนาคารก่อน! 🏦', 'error'); return; }
+  const accNum = document.getElementById('bankAccNum').value.trim();
+  const accName = document.getElementById('bankAccName').value.trim();
+  const accBalance = parseInt(document.getElementById('bankAccBalance').value) || 10000;
+
+  if (!accNum) { shakeEl('bankAccNum'); showToast('ใส่เลขบัญชีด้วย! 💳', 'error'); return; }
+  if (!accName) { shakeEl('bankAccName'); showToast('ใส่ชื่อเจ้าของบัญชี! 👤', 'error'); return; }
+
+  const bankName = selectedBankEl.dataset.bank;
+  const bankLabel = selectedBankEl.querySelector('div:last-child').textContent;
+  const bankEmoji = selectedBankEl.querySelector('.bank-logo').textContent;
+
+  linkedBank = { bank: bankName, bankLabel, bankEmoji, accNum, accName, balance: accBalance };
+  balance = accBalance;
+
+  localStorage.setItem('alarmBank', JSON.stringify(linkedBank));
+  closeModal('bankModal');
+  updateBankCardUI();
+  spawnConfetti(25);
+  showToast(`ผูกบัญชี ${bankLabel} สำเร็จ! 🎉 เงิน ฿${accBalance.toLocaleString()} พร้อมหายแล้ว~`, 'success');
+}
+
+function updateBankCardUI() {
+  if (!linkedBank) return;
+  const card = document.getElementById('bankCard');
+  card.classList.add('linked');
+  document.getElementById('bankIcon').textContent = linkedBank.bankEmoji;
+  document.getElementById('bankCardTitle').textContent = `${linkedBank.bankLabel} — ${linkedBank.accName}`;
+  document.getElementById('bankBadge').textContent = '✅ ผูกแล้ว';
+  document.getElementById('bankBadge').style.background = 'linear-gradient(135deg, #06d6a0, #00e676)';
+  document.getElementById('bankStatus').textContent = `เลขบัญชี: ${linkedBank.accNum}`;
+  document.getElementById('bankStatus').classList.add('linked');
+  document.getElementById('bankBalanceBig').style.display = 'block';
+  document.getElementById('bankBalanceBig').textContent = `฿${balance.toLocaleString('en',{minimumFractionDigits:2})}`;
+}
+
+function resetBankCardUI() {
+  const card = document.getElementById('bankCard');
+  card.classList.remove('linked');
+  document.getElementById('bankIcon').textContent = '🏦';
+  document.getElementById('bankCardTitle').textContent = 'ผูกบัญชีลงโทษ';
+  document.getElementById('bankBadge').textContent = 'จำเป็น!';
+  document.getElementById('bankBadge').style.background = '';
+  document.getElementById('bankStatus').textContent = 'กดเพื่อผูกบัญชี — เงินของคุณกำลังรอ...';
+  document.getElementById('bankStatus').classList.remove('linked');
+  document.getElementById('bankBalanceBig').style.display = 'none';
+}
+
+function updateBankBalanceUI() {
+  document.getElementById('bankBalanceBig').textContent = `฿${balance.toLocaleString('en',{minimumFractionDigits:2})}`;
+}
+
+// ═══════════════════════════════════════════
+// SOUND SELECTOR & CUSTOM SOUNDS
+// ═══════════════════════════════════════════
+const defaultSoundsList = [
+  { id: 'chaos', nameTh: '😈 วุ่นวาย', nameEn: '😈 Pure Chaos' },
+  { id: 'siren', nameTh: '🚨 ไซเรน', nameEn: '🚨 Red Siren' },
+  { id: 'rooster', nameTh: '🐓 ไก่ขัน', nameEn: '🐓 Screaming Rooster' },
+  { id: 'baby', nameTh: '👶 เด็กร้อง', nameEn: '👶 Crying Toddler' },
+  { id: 'drill', nameTh: '🔨 สว่านเช้า', nameEn: '🔨 7AM Drill' },
+  { id: 'nyan', nameTh: '🌈 Nyan Cat', nameEn: '🌈 Nyan Cat' },
+  { id: 'morlam', nameTh: '🪗 หมอลำซิ่ง', nameEn: '🪗 Mor Lam Sing', style: 'border-color:rgba(255,107,203,0.4);' },
+  { id: 'morlam_earrape', nameTh: '💥 หมอลำ EARRAPE', nameEn: '💥 Mor Lam EARRAPE', style: 'border-color:rgba(255,23,68,0.5);color:#ff1744;' }
+];
+
+function renderSoundOptions() {
+  const container = document.getElementById('soundOptionsContainer');
+  if (!container) return;
+  const isTh = currentLang === 'th';
+  let html = '';
+
+  defaultSoundsList.forEach(s => {
+    const active = selectedSound === s.id ? 'active' : '';
+    const label = isTh ? s.nameTh : s.nameEn;
+    const customStyle = s.style ? `style="${s.style}"` : '';
+    html += `<div class="sound-option ${active}" data-sound="${s.id}" ${customStyle} onclick="selectSound('${s.id}')">${label}</div>`;
+  });
+
+  customSounds.forEach(cs => {
+    const active = selectedSound === cs.id ? 'active' : '';
+    const icon = cs.type === 'mic' ? '🎙️' : (cs.type === 'synth' ? '🎛️' : '📁');
+    html += `<div class="sound-option custom-sound ${active}" data-sound="${cs.id}" onclick="selectSound('${cs.id}')">${icon} ${cs.name}</div>`;
+  });
+
+  const addText = isTh ? '➕ เพิ่มเสียงเอง' : '➕ Custom Sound';
+  html += `<div class="sound-option add-custom" id="addCustomSoundBtn" onclick="openCustomSoundModal()">${addText}</div>`;
+  container.innerHTML = html;
+}
+
+function selectSound(soundId) {
+  selectedSound = soundId;
+  renderSoundOptions();
+  previewSound(soundId);
+}
+
+// ═══════════════════════════════════════════
+// SET / CANCEL ALARM
+// ═══════════════════════════════════════════
+function setAlarm() {
+  if (!currentUser) {
+    showToast('ล็อกอินก่อนนะ! 🔑', 'error');
+    openModal('loginModal');
+    return;
+  }
+  if (!linkedBank) {
+    showToast('ผูกบัญชีก่อน! ไม่งั้นไม่มีอะไรจะเสีย 😏', 'error');
+    openModal('bankModal');
+    return;
+  }
+
+  const h = parseInt(document.getElementById('alarmHour').value);
+  const m = parseInt(document.getElementById('alarmMin').value);
+  if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) {
+    showToast('ใส่เวลาให้ถูกนะ! 😤', 'error');
+    return;
+  }
+
+  alarmTime = { h, m };
+  totalPunished = 0;
+
+  document.getElementById('setAlarmBtn').style.display = 'none';
+  document.getElementById('cancelAlarmBtn').style.display = 'block';
+  document.getElementById('alarmBanner').classList.add('show');
+  document.getElementById('bannerTime').textContent =
+    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('alarmHour').disabled = true;
+  document.getElementById('alarmMin').disabled = true;
+
+  showToast(`ตั้งปลุก ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} แล้ว! 💣 ชะตากรรมถูกกำหนดแล้ว`, 'info');
+}
+
+function cancelAlarm() {
+  alarmTime = null;
+  document.getElementById('setAlarmBtn').style.display = 'block';
+  document.getElementById('cancelAlarmBtn').style.display = 'none';
+  document.getElementById('alarmBanner').classList.remove('show');
+  document.getElementById('alarmHour').disabled = false;
+  document.getElementById('alarmMin').disabled = false;
+}
+
+// ═══════════════════════════════════════════
+// TRIGGER ALARM
+// ═══════════════════════════════════════════
+function triggerAlarm() {
+  isRinging = true;
+  document.getElementById('alarmOverlay').classList.add('show');
+  document.getElementById('transferLog').innerHTML = '';
+  document.getElementById('punishCounter').textContent = '';
+
+  startAlarmSound(selectedSound);
+
+  const btn = document.getElementById('dismissBtn');
+  btn.style.fontSize = '1.1rem';
+  btn.style.padding = '16px 40px';
+  btn.textContent = 'ปิดปลุก 😴';
+  moveDismissBtn();
+
+  dismissMoveInterval = setInterval(() => { if (isRinging) moveDismissBtn(); }, 1100);
+  dismissResizeInterval = setInterval(() => { if (isRinging) resizeDismissBtn(); }, 700);
+
+  setTimeout(() => {
+    if (isRinging) {
+      punishInterval = setInterval(() => { if (isRinging) doPunishment(); }, 2500);
+    }
+  }, 4000);
+
+  let msgIdx = 0;
+  const msgInterval = setInterval(() => {
+    if (!isRinging) { clearInterval(msgInterval); return; }
+    const msgs = currentLang === 'th' ? alarmMessagesTh : alarmMessagesEn;
+    msgIdx = (msgIdx + 1) % msgs.length;
+    document.getElementById('alarmMsg').textContent = msgs[msgIdx];
+    const emojis = ['⏰','🔔','💣','🚨','😱','💀','🔥','📢','🤯','😤','👻','🐓','🌋','😵'];
+    document.getElementById('alarmEmoji').textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  }, 1800);
+}
+
+// ═══════════════════════════════════════════
+// DISMISS BUTTON SHENANIGANS
+// ═══════════════════════════════════════════
+function moveDismissBtn() {
+  const btn = document.getElementById('dismissBtn');
+  const overlay = document.getElementById('alarmOverlay');
+  const maxX = Math.max(50, overlay.clientWidth - btn.offsetWidth - 20);
+  const maxY = Math.max(50, overlay.clientHeight - btn.offsetHeight - 20);
+  btn.style.left = (10 + Math.random() * maxX) + 'px';
+  btn.style.top = (10 + Math.random() * maxY) + 'px';
+}
+
+function resizeDismissBtn() {
+  const btn = document.getElementById('dismissBtn');
+  const sizes = [
+    { fontSize: '0.5rem', padding: '4px 8px' },
+    { fontSize: '0.65rem', padding: '6px 10px' },
+    { fontSize: '0.8rem', padding: '8px 16px' },
+    { fontSize: '1.1rem', padding: '16px 40px' },
+    { fontSize: '1.5rem', padding: '22px 54px' },
+    { fontSize: '0.45rem', padding: '3px 6px' },
+    { fontSize: '2rem', padding: '26px 64px' },
+  ];
+  const s = sizes[Math.floor(Math.random() * sizes.length)];
+  btn.style.fontSize = s.fontSize;
+  btn.style.padding = s.padding;
+  const texts = ['ปิดปลุก 😴','กดตรงนี้!','จริงๆ ตรงนี้!','ไม่ใช่ ตรงนี้!','🤏 เล็กจัง','หาเจอมั้ย?',
+    'เร็วๆ!','💤','zzz...','กดสิ กดสิ!','ตื่นแล้วกด!','👆','🫵 กดเลย','ถ้ากล้า...','อยู่นี่~','ว่ะ!','🏃 หนีอีกแล้ว'];
+  btn.textContent = texts[Math.floor(Math.random() * texts.length)];
+}
+
+document.getElementById('dismissBtn').addEventListener('mouseover', () => {
+  if (Math.random() > 0.25) moveDismissBtn();
+});
+
+// ═══════════════════════════════════════════
+// QUIZ QUESTION BANK (BILINGUAL MATH & TRIVIA)
+// ═══════════════════════════════════════════
+const quizBank = [
+  // Math
+  {
+    type: 'math',
+    badgeTh: '🧮 คณิตศาสตร์ปลุกสมอง',
+    badgeEn: '🧮 Math Awakening Challenge',
+    qTh: '17 × 8 = ?',
+    qEn: '17 × 8 = ?',
+    optionsTh: ['136', '126', '146', '134'],
+    optionsEn: ['136', '126', '146', '134'],
+    answer: 0
+  },
+  {
+    type: 'math',
+    badgeTh: '🧮 คณิตศาสตร์ปลุกสมอง',
+    badgeEn: '🧮 Math Awakening Challenge',
+    qTh: '15% ของ 800 บาท คือเท่าไหร่?',
+    qEn: 'What is 15% of $800?',
+    optionsTh: ['100 บาท', '120 บาท', '140 บาท', '160 บาท'],
+    optionsEn: ['$100', '$120', '$140', '$160'],
+    answer: 1
+  },
+  {
+    type: 'math',
+    badgeTh: '🧮 คณิตศาสตร์ปลุกสมอง',
+    badgeEn: '🧮 Math Awakening Challenge',
+    qTh: '25 + (14 × 3) = ?',
+    qEn: '25 + (14 × 3) = ?',
+    optionsTh: ['67', '72', '117', '62'],
+    optionsEn: ['67', '72', '117', '62'],
+    answer: 0
+  },
+  {
+    type: 'math',
+    badgeTh: '🧮 คณิตศาสตร์ปลุกสมอง',
+    badgeEn: '🧮 Math Awakening Challenge',
+    qTh: '√144 + 9² = ?',
+    qEn: '√144 + 9² = ?',
+    optionsTh: ['91', '93', '87', '95'],
+    optionsEn: ['91', '93', '87', '95'],
+    answer: 1
+  },
+  {
+    type: 'math',
+    badgeTh: '🧮 คณิตศาสตร์ปลุกสมอง',
+    badgeEn: '🧮 Math Awakening Challenge',
+    qTh: 'ถ้าซื้อกาแฟ 65 บาท จ่ายแบงก์ 500 ได้เงินทอนกี่บาท?',
+    qEn: 'Coffee costs $65. You pay with a $500 bill. Change?',
+    optionsTh: ['445 บาท', '435 บาท', '425 บาท', '455 บาท'],
+    optionsEn: ['$445', '$435', '$425', '$455'],
+    answer: 1
+  },
+  // Trivia
+  {
+    type: 'trivia',
+    badgeTh: '🌍 ความรู้รอบตัว & มีม',
+    badgeEn: '🌍 General Trivia & Memes',
+    qTh: 'ดวงอาทิตย์ขึ้นทางทิศไหน?',
+    qEn: 'Which direction does the Sun rise from?',
+    optionsTh: ['ทิศตะวันออก', 'ทิศตะวันตก', 'ทิศเหนือ', 'ทิศใต้'],
+    optionsEn: ['East', 'West', 'North', 'South'],
+    answer: 0
+  },
+  {
+    type: 'trivia',
+    badgeTh: '🌍 ความรู้รอบตัว & มีม',
+    badgeEn: '🌍 General Trivia & Memes',
+    qTh: 'สัตว์บกที่วิ่งเร็วที่สุดในโลกคืออะไร?',
+    qEn: 'What is the fastest land animal in the world?',
+    optionsTh: ['สิงโต', 'เสือชีตาห์', 'กวางกาเซลล์', 'ม้าแข่ง'],
+    optionsEn: ['Lion', 'Cheetah', 'Gazelle', 'Racehorse'],
+    answer: 1
+  },
+  {
+    type: 'trivia',
+    badgeTh: '🌍 ความรู้รอบตัว & มีม',
+    badgeEn: '🌍 General Trivia & Memes',
+    qTh: 'ธาตุที่มีสัญลักษณ์เคมีว่า "Au" คือธาตุอะไร?',
+    qEn: 'What element has the chemical symbol "Au"?',
+    optionsTh: ['เงิน (Silver)', 'ทองคำ (Gold)', 'ทองแดง (Copper)', 'อะลูมิเนียม'],
+    optionsEn: ['Silver', 'Gold', 'Copper', 'Aluminum'],
+    answer: 1
+  },
+  {
+    type: 'trivia',
+    badgeTh: '🌍 ความรู้รอบตัว & มีม',
+    badgeEn: '🌍 General Trivia & Memes',
+    qTh: 'ดาวเคราะห์ดวงใดในระบบสุริยะที่ได้ฉายาว่า "ดาวเคราะห์สีแดง"?',
+    qEn: 'Which planet is known as the "Red Planet"?',
+    optionsTh: ['ดาวศุกร์', 'ดาวพฤหัสฯ', 'ดาวอังคาร', 'ดาวพุธ'],
+    optionsEn: ['Venus', 'Jupiter', 'Mars', 'Mercury'],
+    answer: 2
+  },
+  {
+    type: 'trivia',
+    badgeTh: '🌍 ความรู้รอบตัว & มีม',
+    badgeEn: '🌍 General Trivia & Memes',
+    qTh: '1 กิโลกรัม มีกี่กรัม?',
+    qEn: 'How many grams are in 1 kilogram?',
+    optionsTh: ['100 กรัม', '500 กรัม', '1,000 กรัม', '10,000 กรัม'],
+    optionsEn: ['100 g', '500 g', '1,000 g', '10,000 g'],
+    answer: 2
+  },
+  {
+    type: 'trivia',
+    badgeTh: '🌍 ความรู้รอบตัว & มีม',
+    badgeEn: '🌍 General Trivia & Memes',
+    qTh: 'ภาษาทางการของประเทศบราซิลคือภาษาอะไร?',
+    qEn: 'What is the official language of Brazil?',
+    optionsTh: ['สเปน', 'โปรตุเกส', 'อังกฤษ', 'ฝรั่งเศส'],
+    optionsEn: ['Spanish', 'Portuguese', 'English', 'French'],
+    answer: 1
+  }
+];
+
+let currentQuiz = null;
+const QUIZ_NEEDED = 3;
+let quizProgress = 0;
+let usedQuiz = [];
+
+function requestDismissAlarm() {
+  quizProgress = 0;
+  usedQuiz = [];
+  showQuizModal();
+}
+
+function renderQuizProgress() {
+  const el = document.getElementById('quizProgress');
+  if (!el) return;
+  const isTh = currentLang === 'th';
+  let dots = '';
+  for (let i = 0; i < QUIZ_NEEDED; i++) {
+    const cls = i < quizProgress ? 'done' : (i === quizProgress ? 'now' : '');
+    dots += `<span class="q-dot ${cls}">${i < quizProgress ? '✓' : i + 1}</span>`;
+  }
+  el.innerHTML = `<span class="q-label">${isTh ? 'ข้อ' : 'Question'} ${quizProgress + 1}/${QUIZ_NEEDED}</span>${dots}`;
+}
+
+function showQuizModal() {
+  const modal = document.getElementById('quizModal');
+  const badge = document.getElementById('quizBadge');
+  const qEl = document.getElementById('quizQuestion');
+  const optContainer = document.getElementById('quizOptions');
+  const feedback = document.getElementById('quizFeedback');
+
+  let pool = quizBank.map((_, i) => i).filter(i => !usedQuiz.includes(i));
+  if (pool.length === 0) { usedQuiz = []; pool = quizBank.map((_, i) => i); }
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  usedQuiz.push(pick);
+  currentQuiz = quizBank[pick];
+  const isTh = currentLang === 'th';
+
+  badge.className = `quiz-badge ${currentQuiz.type}`;
+  badge.textContent = isTh ? currentQuiz.badgeTh : currentQuiz.badgeEn;
+  qEl.textContent = isTh ? currentQuiz.qTh : currentQuiz.qEn;
+  feedback.textContent = '';
+  optContainer.innerHTML = '';
+  renderQuizProgress();
+
+  const opts = isTh ? currentQuiz.optionsTh : currentQuiz.optionsEn;
+  opts.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt-btn';
+    btn.innerHTML = `<span style="opacity:0.4;">${String.fromCharCode(65 + idx)}.</span> ${opt}`;
+    btn.onclick = () => checkQuizAnswer(idx, btn);
+    optContainer.appendChild(btn);
+  });
+
+  modal.classList.add('show');
+}
+
+function checkQuizAnswer(selectedIndex, btnEl) {
+  if (!currentQuiz) return;
+  const feedback = document.getElementById('quizFeedback');
+  const allBtns = document.querySelectorAll('.quiz-opt-btn');
+  const isTh = currentLang === 'th';
+
+  allBtns.forEach(b => b.disabled = true);
+
+  if (selectedIndex === currentQuiz.answer) {
+    btnEl.classList.add('correct');
+    feedback.style.color = '#000';
+    quizProgress++;
+    renderQuizProgress();
+
+    if (quizProgress >= QUIZ_NEEDED) {
+      feedback.textContent = isTh ? '🎉 ผ่านครบ 3 ข้อ! สติกลับมาแล้ว ปิดปลุกได้!' : '🎉 3 out of 3! Brain online, alarm disarmed!';
+      setTimeout(() => {
+        document.getElementById('quizModal').classList.remove('show');
+        quizProgress = 0;
+        usedQuiz = [];
+        dismissAlarm();
+      }, 800);
+    } else {
+      const left = QUIZ_NEEDED - quizProgress;
+      feedback.textContent = isTh ? `✅ ถูกต้อง! เหลืออีก ${left} ข้อ` : `✅ Correct! ${left} more to go`;
+      setTimeout(() => { showQuizModal(); }, 900);
+    }
+  } else {
+    const penaltyBonus = Math.floor(Math.random() * 900) + 300;
+    btnEl.classList.add('wrong');
+    allBtns[currentQuiz.answer].classList.add('correct');
+    feedback.style.color = '#000';
+    feedback.textContent = isTh
+      ? `❌ ผิด! โดนปรับ -฿${penaltyBonus.toLocaleString()} และต้องกลับไปหาปุ่มปิดใหม่! 💸`
+      : `❌ Wrong! Fined -฿${penaltyBonus.toLocaleString()} and sent back to hunt for the button! 💸`;
+
+    doPunishment(penaltyBonus, isTh ? 'ตอบผิดคำถามปลุกสมอง! 🤯' : 'Failed the Brain Quiz! 🤯');
+
+    quizProgress = 0;
+    usedQuiz = [];
+    setTimeout(() => {
+      document.getElementById('quizModal').classList.remove('show');
+      if (isRinging) {
+        resizeDismissBtn();
+        moveDismissBtn();
+      }
+    }, 1600);
+  }
+}
+
+document.getElementById('dismissBtn').addEventListener('touchstart', (e) => {
+  if (Math.random() > 0.35) {
+    e.preventDefault();
+    moveDismissBtn();
+  } else {
+    requestDismissAlarm();
+  }
+}, { passive: false });
+
+document.getElementById('dismissBtn').addEventListener('click', () => { 
+  requestDismissAlarm(); 
+});
+
+function dismissAlarm() {
+  isRinging = false;
+  stopAlarmSound();
+  clearInterval(punishInterval);
+  clearInterval(dismissMoveInterval);
+  clearInterval(dismissResizeInterval);
+  document.getElementById('alarmOverlay').classList.remove('show');
+  document.getElementById('quizModal').classList.remove('show');
+  cancelAlarm();
+  if (linkedBank) {
+    linkedBank.balance = balance;
+    localStorage.setItem('alarmBank', JSON.stringify(linkedBank));
+    updateBankBalanceUI();
+  }
+  if (totalPunished > 0) showPunishmentSummary();
+  else { spawnConfetti(20); showToast('เก่ง! ตอบถูกตื่นทัน! 💪 เงินปลอดภัย~', 'success'); }
+}
+
+// ═══════════════════════════════════════════
+// PUNISHMENT & LIVE RECIPIENT DISPLAY
+// ═══════════════════════════════════════════
+function doPunishment(customAmount = null, customMsg = null) {
+  const isTh = currentLang === 'th';
+  if (balance <= 0) {
+    document.getElementById('punishCounter').textContent = isTh ? '💀 หมดตัวแล้ว... ยังจะนอนอีก?!' : '💀 Completely broke... still sleeping?!';
+    const ticker = document.getElementById('quizLossTicker');
+    if (ticker) ticker.textContent = isTh ? '💀 หมดตัวแล้ว!' : '💀 Bankrupt!';
+    return;
+  }
+  const amount = customAmount ? customAmount : (Math.floor(Math.random() * 500) + 50);
+  const actualAmount = Math.min(amount, balance);
+  const recipient = funnyRecipients[Math.floor(Math.random() * funnyRecipients.length)];
+  const rName = isTh ? recipient.nameTh : recipient.nameEn;
+  const pMessages = isTh ? punishMessagesTh : punishMessagesEn;
+  const msg = customMsg ? customMsg : pMessages[Math.floor(Math.random() * pMessages.length)];
+  balance -= actualAmount;
+  totalPunished += actualAmount;
+  updateBankBalanceUI();
+
+  // Update Live Victim Display while ringing!
+  document.getElementById('liveVictimAvatar').textContent = recipient.avatar;
+  document.getElementById('liveVictimName').textContent = rName;
+  document.getElementById('liveVictimAmount').textContent = `+฿${actualAmount.toLocaleString()}`;
+
+  // Update real-time loss ticker inside Quiz modal if open
+  const quizTicker = document.getElementById('quizLossTicker');
+  if (quizTicker) {
+    quizTicker.textContent = `-฿${totalPunished.toLocaleString()}`;
+  }
+
+  // Log in overlay
+  const log = document.getElementById('transferLog');
+  const item = document.createElement('div');
+  item.className = 'transfer-item';
+  item.innerHTML = `${msg}<br>${isTh ? 'โอน' : 'Sent'} <span class="amount">-฿${actualAmount.toLocaleString()}</span> ${isTh ? 'ให้' : 'to'} <span class="to">${recipient.avatar} ${rName}</span>`;
+  log.prepend(item);
+  document.getElementById('punishCounter').textContent = isTh
+    ? `💸 สูญไปแล้ว: ฿${totalPunished.toLocaleString()} | เหลือ: ฿${balance.toLocaleString()}`
+    : `💸 Drained: ฿${totalPunished.toLocaleString()} | Balance: ฿${balance.toLocaleString()}`;
+
+  // Record to Weekly Dashboard Data
+  recordLossToDashboard(actualAmount, rName, recipient.avatar);
+}
+
+function showPunishmentSummary() {
+  document.getElementById('punishSummary').classList.add('show');
+  document.getElementById('summaryTotal').textContent = `-฿${totalPunished.toLocaleString()}`;
+  const msgs = [
+    `โอนไปทั้งหมด ฿${totalPunished.toLocaleString()} ให้คนที่คุณไม่รู้จัก 😭`,
+    'ครั้งหน้าตื่นเร็วกว่านี้นะ... ถ้ายังมีเงินเหลือ 💀',
+    'บัญชีของคุณส่งความรู้สึกเสียใจมาให้ 😢',
+    '(เงินจำลองนะ อย่าเพิ่งโทรหาธนาคาร 😅)',
+    'ธนาคารอยากส่งดอกไม้งานศพให้บัญชีของคุณ 💐'
+  ];
+  document.getElementById('summaryMsg').textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  renderDashboard();
+}
+function closeSummary() { document.getElementById('punishSummary').classList.remove('show'); }
+
+// ═══════════════════════════════════════════
+// SOUND ENGINE & CUSTOM SOUND STUDIO
+// ═══════════════════════════════════════════
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function stopCustomPreview() {
+  if (activePreviewAudio) {
+    activePreviewAudio.pause();
+    activePreviewAudio.currentTime = 0;
+    activePreviewAudio = null;
+  }
+  if (activePreviewSynth) {
+    try { activePreviewSynth.osc.stop(); } catch(e){}
+    activePreviewSynth = null;
+  }
+}
+
+function previewSound(type) {
+  stopCustomPreview();
+  if (type.startsWith('custom_')) {
+    playCustomPreview(type);
+    return;
+  }
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  gain.gain.value = 0.12;
+  osc.connect(gain); gain.connect(ctx.destination);
+  const now = ctx.currentTime;
+  switch (type) {
+    case 'chaos':
+      osc.type='sawtooth'; osc.frequency.setValueAtTime(440,now); osc.frequency.linearRampToValueAtTime(880,now+0.3); break;
+    case 'siren':
+      osc.type='sine'; osc.frequency.setValueAtTime(600,now); osc.frequency.linearRampToValueAtTime(1200,now+0.25); osc.frequency.linearRampToValueAtTime(600,now+0.5); break;
+    case 'rooster':
+      osc.type='triangle'; osc.frequency.setValueAtTime(1800,now); osc.frequency.linearRampToValueAtTime(2400,now+0.15); osc.frequency.linearRampToValueAtTime(1200,now+0.5); break;
+    case 'baby':
+      osc.type='sine'; osc.frequency.setValueAtTime(500,now); osc.frequency.linearRampToValueAtTime(800,now+0.1); osc.frequency.linearRampToValueAtTime(400,now+0.3); break;
+    case 'drill':
+      osc.type='square'; osc.frequency.setValueAtTime(200,now); osc.frequency.linearRampToValueAtTime(600,now+0.2); break;
+    case 'nyan':
+      osc.type='square';
+      const notes = [659,659,587,494,494,440,440,494,587,659,587,494,440];
+      notes.forEach((f,i) => osc.frequency.setValueAtTime(f, now + i*0.06));
+      break;
+    case 'morlam':
+      osc.type='sawtooth';
+      gain.gain.value = 0.18;
+      const morlamPreview = [440, 523, 587, 659, 784, 880, 784, 659, 587, 523, 440, 587, 659, 880];
+      morlamPreview.forEach((f, i) => osc.frequency.setValueAtTime(f, now + i*0.045));
+      break;
+    case 'morlam_earrape':
+      osc.type='sawtooth';
+      gain.gain.value = 0.45;
+      const earrapePreview = [880, 1046, 1174, 1318, 1568, 1760, 1568, 1318, 1174, 1046, 880, 1174, 1318, 1760];
+      earrapePreview.forEach((f, i) => osc.frequency.setValueAtTime(f + (Math.random()*40 - 20), now + i*0.04));
+      break;
+  }
+  osc.start(); osc.stop(now + 0.7);
+}
+
+function playCustomPreview(soundId) {
+  const sound = customSounds.find(s => s.id === soundId);
+  if (!sound) return;
+  stopCustomPreview();
+
+  if (sound.type === 'audio' || sound.type === 'mic') {
+    activePreviewAudio = new Audio(sound.data);
+    activePreviewAudio.volume = 1.0;
+    activePreviewAudio.play().catch(e => console.warn('Preview play error:', e));
+    setTimeout(() => { stopCustomPreview(); }, 3500);
+  } else if (sound.type === 'synth') {
+    const cfg = sound.synthConfig || { wave: 'sawtooth', pitch: 550, mod: 8, dist: 1.5 };
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = cfg.wave || 'sawtooth';
+    gain.gain.value = Math.min(0.5, 0.2 * (cfg.dist || 1));
+    osc.connect(gain); gain.connect(ctx.destination);
+    const now = ctx.currentTime;
+    const basePitch = Number(cfg.pitch) || 550;
+    const modSpeed = Number(cfg.mod) || 8;
+    for (let i = 0; i < 10; i++) {
+      const f = basePitch + Math.sin(i * (modSpeed / 2)) * (basePitch * 0.35);
+      osc.frequency.setValueAtTime(f, now + i * 0.08);
+    }
+    osc.start(now); osc.stop(now + 1.0);
+    activePreviewSynth = { osc, gain };
+  }
+}
+
+function startAlarmSound(type) {
+  stopAlarmSound();
+
+  // Check Custom Sounds
+  if (type.startsWith('custom_')) {
+    const custom = customSounds.find(s => s.id === type);
+    if (custom) {
+      if ((custom.type === 'audio' || custom.type === 'mic') && custom.data) {
+        try {
+          customAudioPlayer = new Audio(custom.data);
+          customAudioPlayer.loop = true;
+          customAudioPlayer.volume = 1.0;
+          customAudioPlayer.play().catch(e => console.warn('Alarm audio error:', e));
+        } catch (err) {
+          console.error('Failed to play custom audio:', err);
+        }
+        return;
+      } else if (custom.type === 'synth') {
+        const cfg = custom.synthConfig || { wave: 'sawtooth', pitch: 550, mod: 8, dist: 1.5 };
+        const ctx = getAudioCtx();
+        function createCustomSynthLoop() {
+          if (!isRinging) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = cfg.wave || 'sawtooth';
+          gain.gain.value = Math.min(0.65, 0.25 * (cfg.dist || 1));
+          osc.connect(gain); gain.connect(ctx.destination);
+          currentOscillators.push({ osc, gain });
+          const now = ctx.currentTime;
+          const basePitch = Number(cfg.pitch) || 550;
+          const modSpeed = Number(cfg.mod) || 8;
+          for (let i = 0; i < 16; i++) {
+            const f = basePitch + Math.sin(i * (modSpeed / 2)) * (basePitch * 0.4);
+            osc.frequency.setValueAtTime(f, now + i * 0.08);
+          }
+          osc.start(now);
+          osc.stop(now + 1.3);
+          osc.onended = () => { if (isRinging) setTimeout(createCustomSynthLoop, 30); };
+        }
+        createCustomSynthLoop();
+        return;
+      }
+    }
+  }
+
+  // Built-in presets
+  const ctx = getAudioCtx();
+  function createLoop() {
+    if (!isRinging) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    gain.gain.value = 0.25;
+    osc.connect(gain); gain.connect(ctx.destination);
+    currentOscillators.push({ osc, gain });
+    const now = ctx.currentTime;
+    switch (type) {
+      case 'chaos':
+        osc.type='sawtooth';
+        for(let i=0;i<10;i++) osc.frequency.setValueAtTime(200+Math.random()*1800, now+i*0.12);
+        osc.start(now); osc.stop(now+1.2);
+        osc.onended=()=>{if(isRinging)setTimeout(createLoop,80);}; break;
+      case 'siren':
+        osc.type='sine';
+        for(let i=0;i<4;i++){osc.frequency.setValueAtTime(600,now+i*0.5);osc.frequency.linearRampToValueAtTime(1400,now+i*0.5+0.25);osc.frequency.linearRampToValueAtTime(600,now+i*0.5+0.5);}
+        osc.start(now); osc.stop(now+2);
+        osc.onended=()=>{if(isRinging)setTimeout(createLoop,50);}; break;
+      case 'rooster':
+        osc.type='triangle';
+        [1800,2400,2000,2600,1200].forEach((f,i)=>osc.frequency.setValueAtTime(f,now+[0,0.12,0.22,0.35,0.5][i]));
+        gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0.4,now+0.2); gain.gain.linearRampToValueAtTime(0,now+0.8);
+        osc.start(now); osc.stop(now+0.9);
+        osc.onended=()=>{if(isRinging)setTimeout(createLoop,350);}; break;
+      case 'baby':
+        osc.type='sine';
+        for(let i=0;i<6;i++){osc.frequency.setValueAtTime(500+Math.random()*300,now+i*0.2);osc.frequency.linearRampToValueAtTime(800+Math.random()*400,now+i*0.2+0.1);}
+        osc.start(now); osc.stop(now+1.2);
+        osc.onended=()=>{if(isRinging)setTimeout(createLoop,150);}; break;
+      case 'drill':
+        osc.type='square';
+        for(let i=0;i<10;i++) osc.frequency.setValueAtTime(150+i*60,now+i*0.1);
+        osc.start(now); osc.stop(now+1);
+        osc.onended=()=>{if(isRinging)setTimeout(createLoop,80);}; break;
+      case 'nyan':
+        osc.type='square'; gain.gain.value=0.15;
+        const melody=[659,659,587,494,494,440,440,494,587,659,587,494,440,440,494,587,
+                      659,587,494,587,659,494,440,440,392,440,494,440];
+        melody.forEach((f,i)=>osc.frequency.setValueAtTime(f,now+i*0.09));
+        osc.start(now); osc.stop(now+melody.length*0.09);
+        osc.onended=()=>{if(isRinging)setTimeout(createLoop,100);}; break;
+      case 'morlam':
+        osc.type='sawtooth';
+        gain.gain.value = 0.22;
+        const morlamLoop = [
+          440, 523, 587, 659, 784, 880, 784, 659,
+          587, 659, 784, 880, 988, 880, 784, 659,
+          587, 523, 440, 523, 587, 659, 587, 523,
+          440, 440, 523, 587, 659, 880, 784, 440
+        ];
+        morlamLoop.forEach((f, i) => {
+          osc.frequency.setValueAtTime(f, now + i * 0.055);
+        });
+        osc.start(now);
+        osc.stop(now + morlamLoop.length * 0.055);
+        osc.onended = () => { if (isRinging) setTimeout(createLoop, 20); };
+        break;
+      case 'morlam_earrape':
+        osc.type='sawtooth';
+        gain.gain.value = 0.6;
+        const earrapeLoop = [
+          880, 1046, 1174, 1318, 1568, 1760, 1568, 1318,
+          1174, 1318, 1568, 1760, 1976, 1760, 1568, 1318,
+          1174, 1046, 880, 1046, 1174, 1318, 1174, 1046,
+          880, 880, 1046, 1174, 1318, 1760, 1568, 880
+        ];
+        earrapeLoop.forEach((f, i) => {
+          osc.frequency.setValueAtTime(f * (1 + (Math.sin(i*3)*0.06)), now + i * 0.045);
+        });
+        osc.start(now);
+        osc.stop(now + earrapeLoop.length * 0.045);
+        osc.onended = () => { if (isRinging) setTimeout(createLoop, 10); };
+        break;
+    }
+  }
+  createLoop();
+
+  if (type === 'morlam' || type === 'morlam_earrape') {
+    const beatOsc = ctx.createOscillator();
+    const beatGain = ctx.createGain();
+    beatOsc.type = type === 'morlam_earrape' ? 'square' : 'triangle';
+    beatGain.gain.value = type === 'morlam_earrape' ? 0.45 : 0.2;
+    beatOsc.connect(beatGain); beatGain.connect(ctx.destination);
+    
+    const baseNow = ctx.currentTime;
+    for (let k = 0; k < 16; k++) {
+      beatOsc.frequency.setValueAtTime(type === 'morlam_earrape' ? 120 : 110, baseNow + k * 0.11);
+      beatOsc.frequency.exponentialRampToValueAtTime(40, baseNow + k * 0.11 + 0.08);
+    }
+    beatOsc.start(baseNow);
+    beatOsc.stop(baseNow + 1.8);
+    currentOscillators.push({ osc: beatOsc, gain: beatGain });
+
+    if (type === 'morlam_earrape') {
+      const harshOsc = ctx.createOscillator();
+      const harshGain = ctx.createGain();
+      harshOsc.type = 'square';
+      harshGain.gain.value = 0.35;
+      harshOsc.frequency.setValueAtTime(2400, baseNow);
+      for (let j = 0; j < 20; j++) {
+        harshOsc.frequency.setValueAtTime(2000 + Math.random()*2500, baseNow + j * 0.08);
+      }
+      harshOsc.connect(harshGain); harshGain.connect(ctx.destination);
+      harshOsc.start(baseNow);
+      harshOsc.stop(baseNow + 1.8);
+      currentOscillators.push({ osc: harshOsc, gain: harshGain });
+    }
+  }
+
+  if (type === 'chaos' || type === 'drill') {
+    const o2=ctx.createOscillator(),g2=ctx.createGain();
+    o2.type=type==='chaos'?'square':'sawtooth'; o2.frequency.value=type==='chaos'?1000:300;
+    g2.gain.value=0.06; o2.connect(g2); g2.connect(ctx.destination); o2.start();
+    currentOscillators.push({osc:o2,gain:g2});
+  }
+}
+
+function stopAlarmSound() {
+  if (customAudioPlayer) {
+    try {
+      customAudioPlayer.pause();
+      customAudioPlayer.currentTime = 0;
+    } catch(e){}
+    customAudioPlayer = null;
+  }
+  currentOscillators.forEach(({osc,gain})=>{
+    try{
+      gain.gain.setValueAtTime(0, audioCtx ? audioCtx.currentTime : 0);
+      osc.stop();
+    }catch(e){}
+  });
+  currentOscillators = [];
+}
+
+// ═══════════════════════════════════════════
+// CUSTOM SOUND STUDIO MODAL LOGIC
+// ═══════════════════════════════════════════
+function openCustomSoundModal() {
+  openModal('customSoundModal');
+  renderCustomSoundList();
+}
+
+function closeCustomSoundModal() {
+  stopCustomPreview();
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+  }
+  clearInterval(recTimerInterval);
+  closeModal('customSoundModal');
+}
+
+function switchCustomTab(tab) {
+  stopCustomPreview();
+  const tabs = ['upload', 'mic', 'synth'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    const pane = document.getElementById(`tabPane${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    if (btn) btn.classList.toggle('active', t === tab);
+    if (pane) pane.classList.toggle('active', t === tab);
+  });
+}
+
+// ─── TAB 1: File Upload ───
+function handleAudioFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 10 * 1024 * 1024) {
+    showToast(currentLang === 'th' ? 'ไฟล์ขนาดใหญ่เกินไป (สูงสุด 10MB) ❌' : 'File is too large (Max 10MB) ❌', 'error');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedAudioDataUrl = e.target.result;
+    document.getElementById('uploadPreviewArea').style.display = 'block';
+    const soundNameInput = document.getElementById('uploadSoundName');
+    const defaultName = file.name.replace(/\.[^/.]+$/, '');
+    soundNameInput.value = defaultName.slice(0, 24);
+    showToast(currentLang === 'th' ? `โหลดไฟล์ "${file.name}" พร้อมแล้ว! 🎵` : `File "${file.name}" loaded! 🎵`, 'success');
+  };
+  reader.onerror = () => {
+    showToast(currentLang === 'th' ? 'เกิดข้อผิดพลาดในการอ่านไฟล์ ❌' : 'Error reading audio file ❌', 'error');
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleUploadPreview() {
+  if (!uploadedAudioDataUrl) return;
+  const btn = document.getElementById('uploadPreviewBtn');
+  if (activePreviewAudio) {
+    stopCustomPreview();
+    btn.textContent = currentLang === 'th' ? '▶️ ลองฟังเสียง' : '▶️ Preview';
+  } else {
+    activePreviewAudio = new Audio(uploadedAudioDataUrl);
+    btn.textContent = currentLang === 'th' ? '⏹️ หยุดฟัง' : '⏹️ Stop';
+    activePreviewAudio.onended = () => {
+      btn.textContent = currentLang === 'th' ? '▶️ ลองฟังเสียง' : '▶️ Preview';
+      activePreviewAudio = null;
+    };
+    activePreviewAudio.play().catch(e => console.warn(e));
+  }
+}
+
+function saveUploadedSound() {
+  if (!uploadedAudioDataUrl) return;
+  const name = document.getElementById('uploadSoundName').value.trim() || (currentLang === 'th' ? 'เสียงอัปโหลด' : 'Uploaded Sound');
+  const newSound = {
+    id: 'custom_' + Date.now(),
+    name: name,
+    type: 'audio',
+    data: uploadedAudioDataUrl,
+    createdAt: new Date().toISOString()
+  };
+
+  customSounds.push(newSound);
+  try {
+    localStorage.setItem('customAlarmSounds', JSON.stringify(customSounds));
+  } catch (e) {
+    showToast(currentLang === 'th' ? 'หน่วยความจำเต็ม ไม่สามารถเซฟไฟล์ใหญ่ได้ ❌' : 'Storage full, cannot save large audio ❌', 'error');
+    customSounds.pop();
+    return;
+  }
+
+  selectedSound = newSound.id;
+  stopCustomPreview();
+  renderSoundOptions();
+  renderCustomSoundList();
+  closeCustomSoundModal();
+  spawnConfetti(20);
+  showToast(currentLang === 'th' ? `บันทึกเสียง "${name}" และตั้งเป็นเสียงปลุกแล้ว! 🎉` : `Saved "${name}" as alarm sound! 🎉`, 'success');
+}
+
+// ─── TAB 2: Mic Recording ───
+function toggleMicRecording() {
+  const btn = document.getElementById('recBtn');
+  const timer = document.getElementById('recTimer');
+  const status = document.getElementById('recStatus');
+  const isTh = currentLang === 'th';
+
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    // Stop recording
+    mediaRecorder.stop();
+    btn.classList.remove('recording');
+    btn.textContent = '🎙️';
+    clearInterval(recTimerInterval);
+    status.textContent = isTh ? 'อัดเสียงเรียบร้อยแล้ว! พร้อมทดลองฟังหรือบันทึก' : 'Recording complete! Ready to preview or save';
+  } else {
+    // Start recording
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showToast(isTh ? 'เบราว์เซอร์นี้ไม่รองรับการอัดเสียงไมค์ ❌' : 'Microphone recording not supported on this browser ❌', 'error');
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onload = () => {
+            recordedAudioDataUrl = reader.result;
+            document.getElementById('micPreviewArea').style.display = 'block';
+            document.getElementById('micSoundName').value = isTh ? 'เสียงอัดสุดแสบ' : 'My Voice Alarm';
+          };
+          reader.readAsDataURL(blob);
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        recSeconds = 0;
+        timer.textContent = '00:00';
+        btn.classList.add('recording');
+        btn.textContent = '⏹️';
+        status.textContent = isTh ? '🔴 กำลังอัดเสียง... (ตะโกนให้สุดเสียง!)' : '🔴 Recording in progress... (Make some noise!)';
+
+        recTimerInterval = setInterval(() => {
+          recSeconds++;
+          const m = String(Math.floor(recSeconds / 60)).padStart(2, '0');
+          const s = String(recSeconds % 60).padStart(2, '0');
+          timer.textContent = `${m}:${s}`;
+          if (recSeconds >= 60) toggleMicRecording(); // Auto stop at 1 min
+        }, 1000);
+      })
+      .catch(err => {
+        console.error('Microphone error:', err);
+        showToast(isTh ? 'กรุณาอนุญาตให้เข้าถึงไมโครโฟน 🎙️' : 'Please allow microphone access 🎙️', 'error');
+      });
+  }
+}
+
+function toggleMicPreview() {
+  if (!recordedAudioDataUrl) return;
+  const btn = document.getElementById('micPreviewBtn');
+  if (activePreviewAudio) {
+    stopCustomPreview();
+    btn.textContent = currentLang === 'th' ? '▶️ ลองฟังเสียงอัด' : '▶️ Preview Recording';
+  } else {
+    activePreviewAudio = new Audio(recordedAudioDataUrl);
+    btn.textContent = currentLang === 'th' ? '⏹️ หยุดฟัง' : '⏹️ Stop';
+    activePreviewAudio.onended = () => {
+      btn.textContent = currentLang === 'th' ? '▶️ ลองฟังเสียงอัด' : '▶️ Preview Recording';
+      activePreviewAudio = null;
+    };
+    activePreviewAudio.play().catch(e => console.warn(e));
+  }
+}
+
+function saveRecordedSound() {
+  if (!recordedAudioDataUrl) return;
+  const name = document.getElementById('micSoundName').value.trim() || (currentLang === 'th' ? 'เสียงอัดของฉัน' : 'My Voice Record');
+  const newSound = {
+    id: 'custom_' + Date.now(),
+    name: name,
+    type: 'mic',
+    data: recordedAudioDataUrl,
+    createdAt: new Date().toISOString()
+  };
+
+  customSounds.push(newSound);
+  try {
+    localStorage.setItem('customAlarmSounds', JSON.stringify(customSounds));
+  } catch (e) {
+    showToast(currentLang === 'th' ? 'หน่วยความจำเต็ม ไม่สามารถเซฟเสียงอัดได้ ❌' : 'Storage full, cannot save recording ❌', 'error');
+    customSounds.pop();
+    return;
+  }
+
+  selectedSound = newSound.id;
+  stopCustomPreview();
+  renderSoundOptions();
+  renderCustomSoundList();
+  closeCustomSoundModal();
+  spawnConfetti(20);
+  showToast(currentLang === 'th' ? `บันทึกเสียงอัด "${name}" เรียบร้อยแล้ว! 🎉` : `Saved recording "${name}" as alarm sound! 🎉`, 'success');
+}
+
+// ─── TAB 3: Meme Synth Studio ───
+function setSynthWave(wave, btnEl) {
+  currentSynthWave = wave;
+  document.getElementById('synthWaveVal').textContent = wave.charAt(0).toUpperCase() + wave.slice(1);
+  document.querySelectorAll('.wave-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+}
+
+function updateSynthVal(type, val) {
+  if (type === 'pitch') document.getElementById('synthPitchVal').textContent = `${val} Hz`;
+  if (type === 'mod') document.getElementById('synthModVal').textContent = `${val} Hz`;
+  if (type === 'dist') document.getElementById('synthDistVal').textContent = `${Number(val).toFixed(1)}x`;
+}
+
+function applySynthPreset(preset) {
+  const presets = {
+    ufo: { wave: 'sine', pitch: 1200, mod: 14, dist: 1.5, nameTh: '🛸 ไซเรนยานแม่', nameEn: '🛸 Alien Mothership' },
+    mosquito: { wave: 'sawtooth', pitch: 2200, mod: 26, dist: 2.0, nameTh: '🦟 ยุงบินข้างหู', nameEn: '🦟 Ear Mosquito' },
+    truck: { wave: 'square', pitch: 320, mod: 5, dist: 2.5, nameTh: '🛻 ลำโพงรถพุ่มพวง', nameEn: '🛻 Loud Truck Speaker' },
+    bass: { wave: 'triangle', pitch: 110, mod: 10, dist: 3.5, nameTh: '🔊 เบสกระแทกตับ', nameEn: '🔊 Heavy Bass Blast' },
+    glitch: { wave: 'square', pitch: 1600, mod: 22, dist: 3.0, nameTh: '👾 มนุษย์ต่างดาวรัว', nameEn: '👾 Glitch Extraterrestrial' }
+  };
+
+  const p = presets[preset];
+  if (!p) return;
+
+  setSynthWave(p.wave, document.querySelector(`.wave-btn[data-wave="${p.wave}"]`));
+  document.getElementById('synthPitch').value = p.pitch;
+  document.getElementById('synthMod').value = p.mod;
+  document.getElementById('synthDist').value = p.dist;
+  updateSynthVal('pitch', p.pitch);
+  updateSynthVal('mod', p.mod);
+  updateSynthVal('dist', p.dist);
+
+  document.getElementById('synthSoundName').value = currentLang === 'th' ? p.nameTh : p.nameEn;
+  toggleSynthPreview();
+}
+
+function toggleSynthPreview() {
+  const btn = document.getElementById('synthPreviewBtn');
+  if (activePreviewSynth) {
+    stopCustomPreview();
+    btn.textContent = currentLang === 'th' ? '▶️ ลองฟังเสียง' : '▶️ Preview';
+  } else {
+    btn.textContent = currentLang === 'th' ? '⏹️ หยุดฟัง' : '⏹️ Stop';
+    const pitch = Number(document.getElementById('synthPitch').value) || 550;
+    const mod = Number(document.getElementById('synthMod').value) || 8;
+    const dist = Number(document.getElementById('synthDist').value) || 1.5;
+
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = currentSynthWave;
+    gain.gain.value = Math.min(0.5, 0.2 * dist);
+    osc.connect(gain); gain.connect(ctx.destination);
+    const now = ctx.currentTime;
+
+    for (let i = 0; i < 12; i++) {
+      const f = pitch + Math.sin(i * (mod / 2)) * (pitch * 0.4);
+      osc.frequency.setValueAtTime(f, now + i * 0.08);
+    }
+    osc.start(now); osc.stop(now + 1.2);
+    activePreviewSynth = { osc, gain };
+    setTimeout(() => {
+      btn.textContent = currentLang === 'th' ? '▶️ ลองฟังเสียง' : '▶️ Preview';
+      activePreviewSynth = null;
+    }, 1200);
+  }
+}
+
+function saveSynthSound() {
+  const name = document.getElementById('synthSoundName').value.trim() || (currentLang === 'th' ? 'เสียงสังเคราะห์ใหม่' : 'Custom Synth Sound');
+  const pitch = Number(document.getElementById('synthPitch').value) || 550;
+  const mod = Number(document.getElementById('synthMod').value) || 8;
+  const dist = Number(document.getElementById('synthDist').value) || 1.5;
+
+  const newSound = {
+    id: 'custom_' + Date.now(),
+    name: name,
+    type: 'synth',
+    synthConfig: {
+      wave: currentSynthWave,
+      pitch,
+      mod,
+      dist
+    },
+    createdAt: new Date().toISOString()
+  };
+
+  customSounds.push(newSound);
+  localStorage.setItem('customAlarmSounds', JSON.stringify(customSounds));
+
+  selectedSound = newSound.id;
+  stopCustomPreview();
+  renderSoundOptions();
+  renderCustomSoundList();
+  closeCustomSoundModal();
+  spawnConfetti(20);
+  showToast(currentLang === 'th' ? `บันทึกเสียงสังเคราะห์ "${name}" แล้ว! 🎛️` : `Saved synth "${name}" as alarm sound! 🎛️`, 'success');
+}
+
+// ─── Custom Sound List in Modal ───
+function renderCustomSoundList() {
+  const countEl = document.getElementById('savedCustomCount');
+  const listEl = document.getElementById('savedCustomSoundsList');
+  if (!countEl || !listEl) return;
+
+  countEl.textContent = customSounds.length;
+  if (customSounds.length === 0) {
+    listEl.innerHTML = `<div style="font-size:0.75rem;opacity:0.4;text-align:center;padding:12px;">${currentLang === 'th' ? 'ยังไม่มีเสียงที่คุณเพิ่มไว้ (อัปโหลดหรืออัดเสียงเลย!)' : 'No custom sounds yet (Upload or record one!)'}</div>`;
+    return;
+  }
+
+  let html = '';
+  customSounds.forEach(s => {
+    const icon = s.type === 'mic' ? '🎙️' : (s.type === 'synth' ? '🎛️' : '📁');
+    const isSelected = selectedSound === s.id;
+    html += `
+      <div class="custom-sound-item">
+        <div class="info">
+          <span>${icon}</span>
+          <div>
+            <b>${s.name}</b>
+            ${isSelected ? `<span style="font-size:0.65rem;color:var(--green);margin-left:4px;">(Active)</span>` : ''}
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-icon" onclick="playCustomPreview('${s.id}')" title="Play Preview">▶️</button>
+          <button class="btn-icon" onclick="selectSound('${s.id}'); closeCustomSoundModal();" title="Use as Alarm">🔔</button>
+          <button class="btn-icon del" onclick="deleteCustomSound('${s.id}')" title="Delete">🗑️</button>
+        </div>
+      </div>
+    `;
+  });
+  listEl.innerHTML = html;
+}
+
+function deleteCustomSound(id) {
+  customSounds = customSounds.filter(s => s.id !== id);
+  localStorage.setItem('customAlarmSounds', JSON.stringify(customSounds));
+  if (selectedSound === id) {
+    selectedSound = 'chaos';
+  }
+  renderSoundOptions();
+  renderCustomSoundList();
+  showToast(currentLang === 'th' ? 'ลบเสียงแล้ว 🗑️' : 'Sound deleted 🗑️', 'info');
+}
+
+// ═══════════════════════════════════════════
+// TEST: Double-click clock to trigger alarm
+// ═══════════════════════════════════════════
+document.getElementById('currentTime').addEventListener('dblclick', () => {
+  if (isRinging) return;
+  if (!currentUser) { showToast('ล็อกอินก่อนนะ! 🔑','error'); openModal('loginModal'); return; }
+  if (!linkedBank) { showToast('ผูกบัญชีก่อน! 🏦','error'); openModal('bankModal'); return; }
+  alarmTime = { h:0, m:0 };
+  triggerAlarm();
+});
+
+// ═══════════════════════════════════════════
+// WEEKLY LOSS DASHBOARD LOGIC
+// ═══════════════════════════════════════════
+function getWeeklyData() {
+  const defaultHistory = [
+    { day: 'จ.', loss: 1250, count: 4 },
+    { day: 'อ.', loss: 850, count: 2 },
+    { day: 'พ.', loss: 2400, count: 6 },
+    { day: 'พฤ.', loss: 1600, count: 4 },
+    { day: 'ศ.', loss: 3100, count: 8 },
+    { day: 'ส.', loss: 4500, count: 11 },
+    { day: 'อา.', loss: 1950, count: 5 }
+  ];
+  
+  const defaultRecentLosers = [
+    { user: 'สมชายสายเสมอ', avatar: '😴', amount: 450, to: 'แมวส้มหน้าปากซอย', time: '10 นาทีที่แล้ว' },
+    { user: 'น้องเจนง่วงตลอด', avatar: '🥱', amount: 320, to: 'ลุงข้างบ้านที่ชอบเปิดเพลงตี 3', time: '35 นาทีที่แล้ว' },
+    { user: 'เต้ยโปรเกมเมอร์', avatar: '🎮', amount: 780, to: 'แฟนเก่า (อ๊ะ!)', time: '1 ชม. ที่แล้ว' },
+    { user: 'ป้าศรีชอบนอนดึก', avatar: '👵', amount: 200, to: 'พี่วินมอไซค์ที่ไม่เคยทอน', time: '2 ชม. ที่แล้ว' }
+  ];
+
+  let stored = JSON.parse(localStorage.getItem('alarmWeeklyStats') || 'null');
+  if (!stored) {
+    stored = {
+      days: defaultHistory,
+      recent: defaultRecentLosers,
+      beneficiaries: { 'แมวส้มหน้าปากซอย': 1850, 'ลุงข้างบ้านที่ชอบเปิดเพลงตี 3': 1420, 'แฟนเก่า (อ๊ะ!)': 2100 }
+    };
+    localStorage.setItem('alarmWeeklyStats', JSON.stringify(stored));
+  }
+  return stored;
+}
+
+function recordLossToDashboard(amount, recipientName, recipientAvatar) {
+  const data = getWeeklyData();
+  const todayIdx = (new Date().getDay() + 6) % 7; // 0 for Monday, 6 for Sunday
+  
+  // Add to today
+  data.days[todayIdx].loss += amount;
+  data.days[todayIdx].count += 1;
+
+  // Add to recent losers
+  const userName = currentUser ? currentUser.name : 'คุณ (ผู้ไม่ยอมตื่น)';
+  const userAvatar = currentUser ? '😱' : '💀';
+  data.recent.unshift({
+    user: userName,
+    avatar: userAvatar,
+    amount: amount,
+    to: recipientName,
+    time: 'เมื่อสักครู่'
+  });
+  if (data.recent.length > 8) data.recent.pop();
+
+  // Add to beneficiary stats
+  data.beneficiaries[recipientName] = (data.beneficiaries[recipientName] || 0) + amount;
+
+  localStorage.setItem('alarmWeeklyStats', JSON.stringify(data));
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const data = getWeeklyData();
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  const isTh = currentLang === 'th';
+  const dayNamesEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  
+  // Calculate totals
+  const totalLoss = data.days.reduce((acc, d) => acc + d.loss, 0);
+  const totalCount = data.days.reduce((acc, d) => acc + d.count, 0);
+  const maxLoss = Math.max(...data.days.map(d => d.loss));
+
+  // Find top beneficiary
+  let topBeneficiary = '--';
+  let maxBenAmount = 0;
+  for (const [ben, val] of Object.entries(data.beneficiaries || {})) {
+    if (val > maxBenAmount) {
+      maxBenAmount = val;
+      topBeneficiary = ben;
+    }
+  }
+
+  // Update Stats Box
+  document.getElementById('dashWeeklyTotal').textContent = `฿${totalLoss.toLocaleString()}`;
+  document.getElementById('dashVictimCount').textContent = isTh ? `${totalCount.toLocaleString()} ครั้ง` : `${totalCount.toLocaleString()} times`;
+  document.getElementById('dashMaxLoss').textContent = `฿${maxLoss.toLocaleString()}`;
+  document.getElementById('dashTopBeneficiary').textContent = topBeneficiary.length > 10 ? topBeneficiary.slice(0, 9) + '...' : topBeneficiary;
+
+  // Render Bar Chart
+  const chartEl = document.getElementById('weeklyBarChart');
+  chartEl.innerHTML = '';
+  const scaleMax = Math.max(maxLoss, 100);
+
+  data.days.forEach((d, idx) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    
+    const heightPercent = Math.max(6, Math.min(100, Math.round((d.loss / scaleMax) * 100)));
+    const isToday = idx === todayIdx;
+    const labelDay = isTh ? d.day : dayNamesEn[idx];
+    const tooltipText = isTh 
+      ? `${d.day}: ฿${d.loss.toLocaleString()} (${d.count} ครั้ง)`
+      : `${dayNamesEn[idx]}: ฿${d.loss.toLocaleString()} (${d.count} times)`;
+    
+    col.innerHTML = `
+      <div class="bar-fill ${isToday ? 'today' : ''}" 
+           style="height:${heightPercent}%;" 
+           data-tooltip="${tooltipText}"></div>
+      <div class="bar-day ${isToday ? 'today' : ''}">${labelDay}</div>
+    `;
+    chartEl.appendChild(col);
+  });
+
+  // Render Recent Losers
+  const recentEl = document.getElementById('recentLosersList');
+  recentEl.innerHTML = '';
+  data.recent.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'loser-item';
+    row.innerHTML = `
+      <div class="loser-name">
+        <span>${r.avatar}</span>
+        <div>
+          <div><b>${r.user}</b> <span style="opacity:0.5;font-size:0.7rem;">→ ${r.to}</span></div>
+          <div style="opacity:0.4;font-size:0.65rem;">${r.time}</div>
+        </div>
+      </div>
+      <div class="loser-loss">-฿${r.amount.toLocaleString()}</div>
+    `;
+    recentEl.appendChild(row);
+  });
+}
+
+// ═══════════════════════════════════════════
+// AUTO-LOGIN on page load
+// ═══════════════════════════════════════════
+(function init() {
+  const saved = JSON.parse(localStorage.getItem('alarmUser') || 'null');
+  if (saved) {
+    currentUser = { email: saved.email, name: saved.name };
+    updateNavUI();
+    const bankData = JSON.parse(localStorage.getItem('alarmBank') || 'null');
+    if (bankData) { linkedBank = bankData; balance = bankData.balance; updateBankCardUI(); }
+  }
+  setLanguage(currentLang);
+})();
+</script>
+
+</body>
+</html>
